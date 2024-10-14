@@ -1,6 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: '2024-04-03',
+  compatibilityDate: "2024-04-03",
   devtools: { enabled: true },
   modules: [
     "@nuxt/ui",
@@ -9,6 +9,14 @@ export default defineNuxtConfig({
     "@nuxt/icon",
     "@nuxt/fonts",
     "@nuxt/content",
-    "@nuxt/eslint"
-  ]
-})
+    "@nuxt/eslint",
+    "@nuxtjs/supabase",
+  ],
+  supabase: {
+    redirect: false,
+    redirectOptions: {
+      login: "/auth/login",
+      callback: '/'
+    },
+  },
+});
