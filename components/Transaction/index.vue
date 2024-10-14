@@ -2,7 +2,14 @@
   <div class="grid grid-cols-2 gap-4 md:gap-6 lg:gap-8">
     <div class="flex items-center justify-between">
       <div class="flex items-center space-x-1">
-        <UIcon name="i-heroicons-arrow-up-right" class="text-green-600" />
+        <UIcon
+          :name="icon"
+          :class="
+            props.transaction.type === 'Income'
+              ? 'text-green-600'
+              : 'text-red-600'
+          "
+        />
         <div>{{ props.transaction.description }}</div>
       </div>
       <div>
@@ -34,6 +41,11 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {});
 const { currency } = useCurrency(props.transaction.amount);
 
+const icon = computed(() => {
+  return props.transaction.type === "Income"
+    ? "i-heroicons-arrow-up-right"
+    : "i-heroicons-arrow-down-left";
+});
 const items = [
   [
     {
