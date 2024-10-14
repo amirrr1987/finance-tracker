@@ -4,11 +4,7 @@
       <div class="flex items-center space-x-1">
         <UIcon
           :name="icon"
-          :class="
-            props.transaction.type === 'Income'
-              ? 'text-green-600'
-              : 'text-red-600'
-          "
+          :class="iconColor"
         />
         <div>{{ props.transaction.description }}</div>
       </div>
@@ -41,10 +37,14 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {});
 const { currency } = useCurrency(props.transaction.amount);
 
+const isIncome = computed(() => props.transaction.type === "Income");
 const icon = computed(() => {
-  return props.transaction.type === "Income"
+  return isIncome.value
     ? "i-heroicons-arrow-up-right"
     : "i-heroicons-arrow-down-left";
+});
+const iconColor = computed(() => {
+  return isIncome.value ? "text-green-600" : "text-red-600";
 });
 const items = [
   [
