@@ -12,7 +12,7 @@
     </div>
     <div class="text-2xl font-extrabold text-back dark:text-white mb-2">
       <USkeleton v-if="props.loading" class="h-8 w-full" />
-      <div v-else>{{ props.amount }}</div>
+      <div v-else>{{ currency }}</div>
     </div>
 
     <div>
@@ -59,7 +59,7 @@ const icon = computed(() => {
     ? "i-heroicons-arrow-trending-up"
     : "i-heroicons-arrow-trending-down";
 });
-
+const { currency} = useCurrency(props.amount)
 const percentTrend = computed(() => {
   if (props.amount === 0 || props.lastAmount === 0) return "-";
 

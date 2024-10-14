@@ -1,5 +1,5 @@
 <template>
-  <nav class="py-4 sm:py-6 lg:py-8 shadow">
+  <nav class="py-2 sm:py-3 lg:py-4 shadow">
     <UContainer class="flex justify-between items-center">
       <NuxtLink to="/">Fiance Tracker</NuxtLink>
       <UAvatar
