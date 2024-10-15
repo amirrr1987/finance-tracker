@@ -10,6 +10,7 @@
         v-model="isOpen"
         v-model:state="state"
         @add="addTransaction"
+        @close="closeTransaction"
       />
 
       <template v-if="transactions && transactions.length >= 0">
@@ -46,7 +47,7 @@ const state = ref<State>({
   amount: 0,
   category: "",
   description: "",
-  type: "Income",
+  type: "",
 });
 const addTransaction = async () => {
   await useFetch("/api/v1/transaction/create", {
@@ -58,9 +59,14 @@ const addTransaction = async () => {
   state.value = {} as Transaction;
 };
 
-const deleteTransaction = async (id: number) => {
-  console.log(id);
+const closeTransaction = () => {
+  isOpen.value = false;
+  setTimeout(() => {
+    state.value = {} as Transaction;
+  }, 300);
+};
 
+const deleteTransaction = async (id: number) => {
   await useFetch(`/api/v1/transaction/${id}`, {
     method: "DELETE",
   });
