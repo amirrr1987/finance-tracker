@@ -1,18 +1,24 @@
 <template>
   <section class="py-4 md:py-6 lg:py-8">
     <UContainer>
-      <UButton
-        trailing-icon="i-heroicons-plus"
-        class="mb-4"
-        @click="isOpen = true"
-      />
-      <TransactionForm
-        v-model="isOpen"
-        v-model:state="state"
-        @add="addTransaction"
-        @close="closeTransaction"
-      />
-      {{ state }}
+      <div class="flex justify-between">
+        <h4>List</h4>
+        <div>
+          <UButton
+            label="Add"
+            trailing-icon="i-heroicons-plus"
+            variant="soft"
+            @click="isOpen = true"
+          />
+          <TransactionForm
+            v-model="isOpen"
+            v-model:state="state"
+            @add="addTransaction"
+            @close="closeTransaction"
+          />
+        </div>
+      </div>
+      <UDivider class="my-8" />
       <template v-if="transactions && transactions.length >= 0">
         <template
           v-for="(transaction, index) in transactions"
