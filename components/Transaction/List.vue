@@ -12,7 +12,7 @@
         @add="addTransaction"
         @close="closeTransaction"
       />
-
+      {{ state }}
       <template v-if="transactions && transactions.length >= 0">
         <template
           v-for="(transaction, index) in transactions"
@@ -72,5 +72,11 @@ const deleteTransaction = async (id: number) => {
   });
   await refresh();
 };
-const editTransaction = () => {};
+const editTransaction = async (id: number) => {
+  const { data } = await useFetch<Transaction>(`/api/v1/transaction/${id}`, {
+    method: "get",
+  });
+  state.value = data.value as Transaction;
+  isOpen.value = true;
+};
 </script>
