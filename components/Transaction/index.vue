@@ -18,6 +18,7 @@
           <UButton
             color="white"
             trailing-icon="i-heroicons-ellipsis-horizontal"
+            variant="link"
           />
         </UDropdown>
       </div>
