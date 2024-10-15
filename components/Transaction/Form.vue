@@ -1,13 +1,29 @@
 <template>
-  <UModal>
+  <UModal :ui="ui">
+    <div class="flex items-center justify-between">
+      <h3
+        class="text-base font-semibold leading-6 text-gray-900 dark:text-white"
+      >
+        {{ props.state.description }}
+      </h3>
+      <UButton
+        color="gray"
+        variant="ghost"
+        icon="i-heroicons-x-mark-20-solid"
+        class="-my-1"
+        @click="emits('close')"
+      />
+    </div>
     <UForm
       :schema="transactionSchema"
       :state="props.state"
       class="p-4 space-y-4"
       @submit="emits('add')"
+      @reset="emits('close')"
     >
       <UFormGroup label="amount" name="amount">
         <UInput
+          type="number"
           :model-value="props.state.amount"
           @input="(event: Event) => emits('update:state', { ...props.state, amount: Number((event.target as HTMLInputElement).value) })"
         />
@@ -32,7 +48,10 @@
           "
         />
       </UFormGroup>
-      <UButton label="add" type="submit" />
+      <div class="space-x-4">
+        <UButton label="Submit" type="submit" />
+        <UButton label="Cancel" type="reset" variant="ghost" />
+      </div>
     </UForm>
   </UModal>
 </template>
@@ -48,7 +67,10 @@ const props = withDefaults(defineProps<Props>(), {
   state: () => ({} as TransactionDto),
 });
 
-const emits = defineEmits(["add", "update:state"]);
-
+const emits = defineEmits(["add", "close", "update:state"]);
 const items = ["Income", "Outcome"];
+
+const ui = {
+  base: "p-2",
+};
 </script>
