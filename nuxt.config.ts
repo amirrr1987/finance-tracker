@@ -12,6 +12,9 @@ export default defineNuxtConfig({
     "@nuxt/eslint",
     "@nuxtjs/supabase",
   ],
+  plugins: [
+    '~/plugins/logger'
+  ],
   supabase: {
     redirect: false,
     redirectOptions: {

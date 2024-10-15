@@ -19,6 +19,7 @@
     "@nuxtjs/color-mode": "^3.5.1",
     "@nuxtjs/supabase": "^1.4.1",
     "add": "^2.0.6",
+    "console-log-advanced": "^1.5.0",
     "countries-currency-locale": "1.0.2",
     "module": "^1.2.5",
     "nuxi": "^3.14.0",

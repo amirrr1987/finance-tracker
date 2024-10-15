@@ -78,6 +78,18 @@ const deleteTransaction = async (id: number) => {
   });
   await refresh();
 };
+
+const { $clg } = useNuxtApp();
+$clg.logger({
+  name: "1",
+  value: 1,
+  path: "components-Transaction-List.vue",
+  line: "84",
+  date: "2024-October-15",
+  time: "16:56:04",
+  comment: `comment`,
+});
+
 const editTransaction = async (id: number) => {
   const { data } = await useFetch<Transaction>(`/api/v1/transaction/${id}`, {
     method: "get",
