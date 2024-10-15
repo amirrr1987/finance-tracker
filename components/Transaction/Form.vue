@@ -67,7 +67,7 @@ const props = withDefaults(defineProps<Props>(), {
   state: () => ({} as TransactionDto),
 });
 
-const emits = defineEmits(["add", "close", "update:state"]);
+const emits = defineEmits(["add", "close", "edit", "update:state"]);
 const items = ["Income", "Outcome"];
 
 const ui = {
