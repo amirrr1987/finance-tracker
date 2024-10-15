@@ -2,10 +2,7 @@
   <div class="grid grid-cols-2 gap-4 md:gap-6 lg:gap-8">
     <div class="flex items-center justify-between">
       <div class="flex items-center space-x-1">
-        <UIcon
-          :name="icon"
-          :class="iconColor"
-        />
+        <UIcon :name="icon" :class="iconColor" />
         <div>{{ props.transaction.description }}</div>
       </div>
       <div>
@@ -26,10 +23,9 @@
       </div>
     </div>
   </div>
-  <UDivider class="my-2" />
 </template>
 <script setup lang="ts">
-import type { Transaction } from "~/types/transactionModel";
+import type { Transaction } from "~/types/transaction.model";
 
 interface Props {
   transaction: Transaction;
@@ -46,17 +42,20 @@ const icon = computed(() => {
 const iconColor = computed(() => {
   return isIncome.value ? "text-green-600" : "text-red-600";
 });
+
+const emits = defineEmits(["delete", "edit"]);
+
 const items = [
   [
     {
       icon: "i-heroicons-pencil",
       label: "Edit",
-      click: () => console.log("Edit", props.transaction.id),
+      click: () => emits("edit", props.transaction.id),
     },
     {
       icon: "i-heroicons-trash",
       label: "Delete",
-      click: () => console.log("Delete", props.transaction.id),
+      click: () => emits("delete", props.transaction.id),
     },
   ],
 ];
