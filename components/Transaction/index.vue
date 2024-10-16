@@ -44,14 +44,14 @@ const iconColor = computed(() => {
   return isIncome.value ? "text-green-600" : "text-red-600";
 });
 
-const emits = defineEmits(["delete", "edit"]);
+const emits = defineEmits(["delete", "get"]);
 
 const items = [
   [
     {
       icon: "i-heroicons-pencil",
       label: "Edit",
-      click: () => emits("edit", props.transaction.id),
+      click: () => emits("get", props.transaction.id),
     },
     {
       icon: "i-heroicons-trash",
