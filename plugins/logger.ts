@@ -3,7 +3,7 @@ export default defineNuxtPlugin({
   name: "clg",
   parallel: true,
   setup(nuxtApp) {
-    const clg = new ConsoleLogAdvanced({ isDevelopMode: false });
+    const clg = new ConsoleLogAdvanced({ isDevelopMode: true });
     nuxtApp.provide("clg", clg);
   },
 });
