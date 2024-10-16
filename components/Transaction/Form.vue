@@ -18,7 +18,7 @@
       :schema="transactionSchema"
       :state="props.state"
       class="p-4 space-y-4"
-      @submit="emits('add')"
+      @submit="props.isEdit ? emits('edit') : emits('add')"
       @reset="emits('close')"
     >
       <UFormGroup label="amount" name="amount">
@@ -62,9 +62,11 @@ import {
 } from "~/schema/transaction.schema";
 interface Props {
   state: TransactionDto;
+  isEdit: boolean;
 }
 const props = withDefaults(defineProps<Props>(), {
   state: () => ({} as TransactionDto),
+  isEdit: false,
 });
 
 const emits = defineEmits(["add", "close", "edit", "update:state"]);
