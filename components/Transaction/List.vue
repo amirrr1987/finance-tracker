@@ -21,20 +21,30 @@
         </div>
       </div>
       <UDivider class="my-8" />
-      <template v-if="transactions && transactions.length >= 0">
+      <template
+        v-for="(transactionsOnDay, date) in transactionsGroupByDate"
+        :key="date"
+      >
+        <!-- <template v-if="transactionsOnDay && transactionsOnDay.length >= 0"> -->
         <template
-          v-for="(transaction, index) in transactions"
+          v-for="(transaction, index) in transactionsOnDay"
           :key="transaction.id"
         >
+          <TransactionDailySummery
+            :date="(date as string)"
+            :transactions="transactionsOnDay"
+          />
           <Transaction
             :transaction="transaction"
             @delete="deleteTransaction"
             @get="getTransaction"
           />
-          <UDivider v-if="index + 1 < transactions.length" class="my-4" />
+          <UDivider v-if="index + 1 < transactionsOnDay.length" class="my-4" />
+          <!-- </template> -->
         </template>
+
+        <!-- <USkeleton v-else class="h-12" /> -->
       </template>
-      <USkeleton v-else class="h-12" />
     </UContainer>
   </section>
 </template>
@@ -52,7 +62,7 @@ const state = ref<Transaction>({
   description: "",
   type: "",
   id: 0,
-  created_at: new Date(),
+  created_at: "",
 });
 
 const closeTransaction = () => {
@@ -69,16 +79,6 @@ const deleteTransaction = async (id: number) => {
   await refresh();
 };
 
-const { $clg } = useNuxtApp();
-$clg.logger({
-  name: "1",
-  value: 1,
-  path: "components-Transaction-List.vue",
-  line: "84",
-  date: "2024-October-15",
-  time: "16:56:04",
-  comment: `comment`,
-});
 const isEdit = ref(false);
 const getTransaction = async (id: number) => {
   const { data } = await useFetch<Transaction>(`/api/v1/transaction/${id}`, {
@@ -109,4 +109,18 @@ const editTransaction = async () => {
   isEdit.value = false;
   isOpen.value = false;
 };
+interface Grouped {
+  [key: string]: Transaction[];
+}
+const transactionsGroupByDate = computed(() => {
+  const grouped: Grouped = {};
+  for (const transaction of transactions.value ?? []) {
+    const date = new Date(transaction.created_at).toISOString().split("T")[0];
+    if (!grouped[date]) {
+      grouped[date] = [];
+    }
+    grouped[date].push(transaction);
+  }
+  return grouped;
+});
 </script>
