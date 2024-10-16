@@ -13,6 +13,8 @@
           <TransactionForm
             v-model="isOpen"
             v-model:state="state"
+            :is-edit="isEdit"
+            @edit="editTransaction"
             @add="addTransaction"
             @close="closeTransaction"
           />
@@ -27,7 +29,7 @@
           <Transaction
             :transaction="transaction"
             @delete="deleteTransaction"
-            @edit="editTransaction"
+            @get="getTransaction"
           />
           <UDivider v-if="index + 1 < transactions.length" class="my-4" />
         </template>
@@ -42,28 +44,16 @@ import type { Transaction } from "~/types/transaction.model";
 const { data: transactions, refresh } = await useFetch<Transaction[]>(
   "/api/v1/transaction"
 );
-interface State {
-  amount: number;
-  category: string;
-  description: string;
-  type: string;
-}
+
 const isOpen = ref(false);
-const state = ref<State>({
+const state = ref<Transaction>({
   amount: 0,
   category: "",
   description: "",
   type: "",
+  id: 0,
+  created_at: new Date(),
 });
-const addTransaction = async () => {
-  await useFetch("/api/v1/transaction/create", {
-    method: "POST",
-    body: { ...state.value } as Transaction,
-  });
-  await refresh();
-  isOpen.value = false;
-  state.value = {} as Transaction;
-};
 
 const closeTransaction = () => {
   isOpen.value = false;
@@ -89,12 +79,34 @@ $clg.logger({
   time: "16:56:04",
   comment: `comment`,
 });
-
-const editTransaction = async (id: number) => {
+const isEdit = ref(false);
+const getTransaction = async (id: number) => {
   const { data } = await useFetch<Transaction>(`/api/v1/transaction/${id}`, {
     method: "get",
   });
   state.value = data.value as Transaction;
+  isEdit.value = true;
   isOpen.value = true;
+};
+const addTransaction = async () => {
+  await useFetch("/api/v1/transaction/create", {
+    method: "POST",
+    body: { ...state.value } as Transaction,
+  });
+  await refresh();
+  isOpen.value = false;
+  state.value = {} as Transaction;
+};
+const editTransaction = async () => {
+  const { data } = await useFetch<Transaction>(
+    `/api/v1/transaction/${state.value.id}`,
+    {
+      method: "PUT",
+      body: state.value,
+    }
+  );
+  console.log(data.value);
+  isEdit.value = false;
+  isOpen.value = false;
 };
 </script>
