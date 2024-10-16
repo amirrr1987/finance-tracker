@@ -56,16 +56,14 @@
   </UModal>
 </template>
 <script setup lang="ts">
-import {
-  transactionSchema,
-  type TransactionDto,
-} from "~/schema/transaction.schema";
+import { transactionSchema } from "~/schema/transaction.schema";
+import type { Transaction } from "~/types/transaction.model";
 interface Props {
-  state: TransactionDto;
+  state: Transaction;
   isEdit: boolean;
 }
 const props = withDefaults(defineProps<Props>(), {
-  state: () => ({} as TransactionDto),
+  state: () => ({} as Transaction),
   isEdit: false,
 });
 
