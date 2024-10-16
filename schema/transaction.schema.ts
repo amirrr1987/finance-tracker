@@ -5,6 +5,7 @@ export const transactionSchema = z.object({
   type: z.string(),
   description: z.string(),
   category: z.string(),
+    id: z.number(),
+  created_at: z.string(),
 });
 
-export type TransactionDto = z.input<typeof transactionSchema>;
