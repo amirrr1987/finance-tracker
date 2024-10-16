@@ -19,6 +19,7 @@
             color="white"
             trailing-icon="i-heroicons-ellipsis-horizontal"
             variant="link"
+            :loading="loading"
           />
         </UDropdown>
       </div>
@@ -33,21 +34,24 @@ interface Props {
   transaction: Transaction;
   isLoading: boolean;
 }
+
 const props = withDefaults(defineProps<Props>(), {});
 const { currency } = useCurrency(props.transaction.amount);
 
 const isIncome = computed(() => props.transaction.type === "Income");
+
 const icon = computed(() => {
   return isIncome.value
     ? "i-heroicons-arrow-up-right"
     : "i-heroicons-arrow-down-left";
 });
+
 const iconColor = computed(() => {
   return isIncome.value ? "text-green-600" : "text-red-600";
 });
 
 const emits = defineEmits(["delete", "get"]);
-
+const loading = ref(false);
 const items = [
   [
     {
@@ -58,8 +62,18 @@ const items = [
     {
       icon: "i-heroicons-trash",
       label: "Delete",
-      click: () => emits("delete", props.transaction.id),
+      click: () => {
+        emits("delete", props.transaction.id);
+      },
     },
   ],
 ];
+watch(props, () => {
+  if (props.isLoading) {
+    loading.value = true;
+  }
+  if (!props.isLoading) {
+    loading.value = false;
+  }
+});
 </script>

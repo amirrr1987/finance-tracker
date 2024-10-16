@@ -12,14 +12,13 @@ export default defineNuxtConfig({
     "@nuxt/eslint",
     "@nuxtjs/supabase",
   ],
-  plugins: [
-    '~/plugins/logger'
-  ],
+  plugins: ["~/plugins/logger"],
   supabase: {
     redirect: false,
     redirectOptions: {
       login: "/auth/login",
-      callback: '/'
+      callback: "/",
     },
   },
+  ui: {},
 });

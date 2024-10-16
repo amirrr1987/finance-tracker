@@ -35,7 +35,7 @@
           v-for="transaction in transactionsOnDay"
           :key="transaction.id"
           :transaction="transaction"
-          :is-loading="isLoading"
+          :is-loading="deleteIsLoading"
           @delete="deleteTransaction"
           @get="getTransaction"
         />
@@ -50,8 +50,7 @@ const { data: transactions, refresh } = await useFetch<Transaction[]>(
   "/api/v1/transaction"
 );
 
-const toast = useToast();
-const isOpen = ref(false);
+const isOpen = ref(false)
 const state = ref<Transaction>({
   amount: 0,
   category: "",
@@ -68,28 +67,18 @@ const closeTransaction = () => {
   }, 300);
 };
 
+const deleteIsLoading = ref(false);
 const deleteTransaction = async (id: number) => {
-  isLoading.value = true;
-
+  deleteIsLoading.value = true;
   try {
     await useFetch(`/api/v1/transaction/${id}`, {
       method: "DELETE",
     });
     await refresh();
-    toast.add({
-      title: "",
-      icon: "i-heroicons-check-circle",
-      color: "green",
-    });
   } catch (error) {
     console.log(error);
-    toast.add({
-      title: "",
-      icon: "i-heroicons-exclamation-circle",
-      color: "red",
-    });
   } finally {
-    isLoading.value = false;
+    deleteIsLoading.value = false;
   }
 };
 
@@ -102,17 +91,32 @@ const getTransaction = async (id: number) => {
   isEdit.value = true;
   isOpen.value = true;
 };
+
 const isLoading = ref(false);
+const toast = useToast();
+
 const addTransaction = async () => {
   isLoading.value = true;
-  await useFetch("/api/v1/transaction/create", {
-    method: "POST",
-    body: { ...state.value } as Transaction,
-  });
-  await refresh();
-  isLoading.value = false;
-  isOpen.value = false;
-  state.value = {} as Transaction;
+  try {
+    await useFetch("/api/v1/transaction/create", {
+      method: "POST",
+      body: { ...state.value } as Transaction,
+    });
+    await toast.add({
+      title: "Success add",
+    });
+    await refresh();
+  } catch (error) {
+    toast.add({
+      title: "error add",
+      color: "red",
+      description: (error as Error).message,
+    });
+  } finally {
+    isLoading.value = false;
+    isOpen.value = false;
+    state.value = {} as Transaction;
+  }
 };
 const editTransaction = async () => {
   const { data } = await useFetch<Transaction>(
