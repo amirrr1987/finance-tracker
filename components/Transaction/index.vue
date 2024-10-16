@@ -24,12 +24,14 @@
       </div>
     </div>
   </div>
+  <UDivider class="my-4" />
 </template>
 <script setup lang="ts">
 import type { Transaction } from "~/types/transaction.model";
 
 interface Props {
   transaction: Transaction;
+  isLoading: boolean;
 }
 const props = withDefaults(defineProps<Props>(), {});
 const { currency } = useCurrency(props.transaction.amount);

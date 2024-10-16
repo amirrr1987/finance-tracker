@@ -5,7 +5,9 @@ export const transactionSchema = z.object({
   type: z.string(),
   description: z.string(),
   category: z.string(),
-    id: z.number(),
-  created_at: z.string(),
+  id: z.number(),
+  createdAt: z.string(),
 });
+export const transactionSchemaOnCreate = transactionSchema.omit({ id: true, createdAt: true });
+
 

@@ -2,7 +2,7 @@
   <section class="py-4 md:py-6 lg:py-8">
     <UContainer>
       <div class="flex justify-between">
-        <h4>List</h4>
+        <h4 class="font-semibold text-xl">List</h4>
         <div>
           <UButton
             label="Add"
@@ -14,6 +14,7 @@
             v-model="isOpen"
             v-model:state="state"
             :is-edit="isEdit"
+            :is-loading="isLoading"
             @edit="editTransaction"
             @add="addTransaction"
             @close="closeTransaction"
@@ -21,30 +22,24 @@
         </div>
       </div>
       <UDivider class="my-8" />
-      <template
+      <div
         v-for="(transactionsOnDay, date) in transactionsGroupByDate"
         :key="date"
+        class="mb-12"
       >
-        <!-- <template v-if="transactionsOnDay && transactionsOnDay.length >= 0"> -->
-        <template
-          v-for="(transaction, index) in transactionsOnDay"
+        <TransactionDailySummery
+          :date="(date as string)"
+          :transactions="transactionsOnDay"
+        />
+        <Transaction
+          v-for="transaction in transactionsOnDay"
           :key="transaction.id"
-        >
-          <TransactionDailySummery
-            :date="(date as string)"
-            :transactions="transactionsOnDay"
-          />
-          <Transaction
-            :transaction="transaction"
-            @delete="deleteTransaction"
-            @get="getTransaction"
-          />
-          <UDivider v-if="index + 1 < transactionsOnDay.length" class="my-4" />
-          <!-- </template> -->
-        </template>
-
-        <!-- <USkeleton v-else class="h-12" /> -->
-      </template>
+          :transaction="transaction"
+          :is-loading="isLoading"
+          @delete="deleteTransaction"
+          @get="getTransaction"
+        />
+      </div>
     </UContainer>
   </section>
 </template>
@@ -55,6 +50,7 @@ const { data: transactions, refresh } = await useFetch<Transaction[]>(
   "/api/v1/transaction"
 );
 
+const toast = useToast();
 const isOpen = ref(false);
 const state = ref<Transaction>({
   amount: 0,
@@ -62,7 +58,7 @@ const state = ref<Transaction>({
   description: "",
   type: "",
   id: 0,
-  created_at: "",
+  createdAt: "",
 });
 
 const closeTransaction = () => {
@@ -73,10 +69,28 @@ const closeTransaction = () => {
 };
 
 const deleteTransaction = async (id: number) => {
-  await useFetch(`/api/v1/transaction/${id}`, {
-    method: "DELETE",
-  });
-  await refresh();
+  isLoading.value = true;
+
+  try {
+    await useFetch(`/api/v1/transaction/${id}`, {
+      method: "DELETE",
+    });
+    await refresh();
+    toast.add({
+      title: "",
+      icon: "i-heroicons-check-circle",
+      color: "green",
+    });
+  } catch (error) {
+    console.log(error);
+    toast.add({
+      title: "",
+      icon: "i-heroicons-exclamation-circle",
+      color: "red",
+    });
+  } finally {
+    isLoading.value = false;
+  }
 };
 
 const isEdit = ref(false);
@@ -88,12 +102,15 @@ const getTransaction = async (id: number) => {
   isEdit.value = true;
   isOpen.value = true;
 };
+const isLoading = ref(false);
 const addTransaction = async () => {
+  isLoading.value = true;
   await useFetch("/api/v1/transaction/create", {
     method: "POST",
     body: { ...state.value } as Transaction,
   });
   await refresh();
+  isLoading.value = false;
   isOpen.value = false;
   state.value = {} as Transaction;
 };
@@ -115,7 +132,7 @@ interface Grouped {
 const transactionsGroupByDate = computed(() => {
   const grouped: Grouped = {};
   for (const transaction of transactions.value ?? []) {
-    const date = new Date(transaction.created_at).toISOString().split("T")[0];
+    const date = new Date(transaction.createdAt).toISOString().split("T")[0];
     if (!grouped[date]) {
       grouped[date] = [];
     }

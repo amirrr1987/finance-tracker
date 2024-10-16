@@ -1,12 +1,13 @@
 <template>
-  <div class="grid grid-cols-2 gap-4 md:gap-6 lg:gap-8 text-gray-400 mb-4">
-    <div class="flex items-center justify-between">
+  <div class="flex justify-between text-gray-400">
+    <div class="ml-4">
       {{ props.date }}
     </div>
-    <div class="flex gap-x-4 justify-end">
+    <div class="mr-12">
       {{ currency }}
     </div>
   </div>
+  <UDivider class="mb-4 mt-2" />
 </template>
 <script setup lang="ts">
 import type { Transaction } from "~/types/transaction.model";

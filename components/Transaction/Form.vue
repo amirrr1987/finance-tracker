@@ -15,7 +15,7 @@
       />
     </div>
     <UForm
-      :schema="transactionSchema"
+      :schema="transactionSchemaOnCreate"
       :state="props.state"
       class="p-4 space-y-4"
       @submit="props.isEdit ? emits('edit') : emits('add')"
@@ -49,22 +49,24 @@
         />
       </UFormGroup>
       <div class="space-x-4">
-        <UButton label="Submit" type="submit" />
+        <UButton label="Submit" type="submit" :loading="isLoading" />
         <UButton label="Cancel" type="reset" variant="ghost" />
       </div>
     </UForm>
   </UModal>
 </template>
 <script setup lang="ts">
-import { transactionSchema } from "~/schema/transaction.schema";
+import { transactionSchemaOnCreate } from "~/schema/transaction.schema";
 import type { Transaction } from "~/types/transaction.model";
 interface Props {
   state: Transaction;
   isEdit: boolean;
+  isLoading: boolean
 }
 const props = withDefaults(defineProps<Props>(), {
   state: () => ({} as Transaction),
   isEdit: false,
+  isLoading: false
 });
 
 const emits = defineEmits(["add", "close", "edit", "update:state"]);
