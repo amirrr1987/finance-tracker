@@ -1,8 +1,4 @@
-export interface Transaction {
-  id: number;
-  created_at: Date;
-  amount: number;
-  type: string;
-  description: string;
-  category: string;
-}
+import type { z } from "zod";
+import type { transactionSchema } from "~/schema/transaction.schema";
+
+export type Transaction = z.input<typeof transactionSchema>;
