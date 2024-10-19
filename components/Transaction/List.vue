@@ -36,7 +36,8 @@
           :key="transaction.id"
           :transaction="transaction"
           :is-loading="deleteIsLoading"
-          @delete="deleteTransaction"
+          :selected-transaction-id="selectedTransactionId"
+          @delete="deleteTransaction(transaction.id)"
           @get="getTransaction"
         />
       </div>
@@ -68,8 +69,10 @@ const closeTransaction = () => {
 };
 
 const deleteIsLoading = ref(false);
+const selectedTransactionId = ref<number>(-1);
 const deleteTransaction = async (id: number) => {
   deleteIsLoading.value = true;
+  selectedTransactionId.value = id;
   try {
     await useFetch(`/api/v1/transaction/${id}`, {
       method: "DELETE",
@@ -79,6 +82,7 @@ const deleteTransaction = async (id: number) => {
     console.log(error);
   } finally {
     deleteIsLoading.value = false;
+    selectedTransactionId.value = -1;
   }
 };
 
