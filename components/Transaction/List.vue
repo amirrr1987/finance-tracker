@@ -70,6 +70,7 @@ const closeTransaction = () => {
 
 const deleteIsLoading = ref(false);
 const selectedTransactionId = ref<number>(-1);
+const tosat = useToast()
 const deleteTransaction = async (id: number) => {
   deleteIsLoading.value = true;
   selectedTransactionId.value = id;
@@ -78,6 +79,11 @@ const deleteTransaction = async (id: number) => {
       method: "DELETE",
     });
     await refresh();
+    tosat.add({
+      title: 'Deleted success',
+      description: `${id} deleted success`,
+      icon: 'i-heroicons-check-circle'
+    })
   } catch (error) {
     console.log(error);
   } finally {
