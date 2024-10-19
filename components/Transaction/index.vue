@@ -16,10 +16,10 @@
       <div>
         <UDropdown :items="items" :popper="{ placement: 'bottom-start' }">
           <UButton
-            color="white"
+            :color="props.selectedTransactionId === props.transaction.id ? 'rose': 'white'"
             trailing-icon="i-heroicons-ellipsis-horizontal"
             variant="link"
-            :loading="loading"
+            :loading="props.selectedTransactionId === props.transaction.id"
           />
         </UDropdown>
       </div>
@@ -33,6 +33,7 @@ import type { Transaction } from "~/types/transaction.model";
 interface Props {
   transaction: Transaction;
   isLoading: boolean;
+  selectedTransactionId: number;
 }
 
 const props = withDefaults(defineProps<Props>(), {});
@@ -51,7 +52,6 @@ const iconColor = computed(() => {
 });
 
 const emits = defineEmits(["delete", "get"]);
-const loading = ref(false);
 const items = [
   [
     {
@@ -68,12 +68,4 @@ const items = [
     },
   ],
 ];
-watch(props, () => {
-  if (props.isLoading) {
-    loading.value = true;
-  }
-  if (!props.isLoading) {
-    loading.value = false;
-  }
-});
 </script>
