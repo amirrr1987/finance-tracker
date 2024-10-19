@@ -1,172 +1,106 @@
 <template>
   <section class="py-4 md:py-6 lg:py-8">
-    <UContainer>
-      <div class="flex justify-between">
-        <h4 class="font-semibold text-xl">List</h4>
-        <div>
+    <UModal v-model="isOpen">
+      <UForm
+        :schema="transactionSchemaOnCreate"
+        :state="transactionStore.transaction"
+        class="p-4 space-y-4"
+        @submit="submitForm"
+        @reset="closeModal"
+      >
+        <UFormGroup label="amount" name="amount">
+          <UInput v-model="transactionStore.transaction.amount" type="number" />
+        </UFormGroup>
+        <UFormGroup label="category" name="category">
+          <UInput v-model="transactionStore.transaction.category" />
+        </UFormGroup>
+        <UFormGroup label="description" name="description">
+          <UInput v-model="transactionStore.transaction.description" />
+        </UFormGroup>
+        <UFormGroup label="type" name="type">
+          <USelect
+            v-model="transactionStore.transaction.type"
+            :options="['Income', 'Expose']"
+          />
+        </UFormGroup>
+        <div class="space-x-4">
           <UButton
-            label="Add"
-            trailing-icon="i-heroicons-plus"
-            variant="soft"
-            @click="isOpen = true"
+            label="Submit"
+            type="submit"
+            :loading="
+              transactionStore.isLoading.createOne ||
+              transactionStore.isLoading.editOne
+            "
           />
-          <TransactionForm
-            v-model="isOpen"
-            v-model:state="state"
-            :is-edit="isEdit"
-            :is-loading="isLoading"
-            @edit="editTransaction"
-            @add="addTransaction"
-            @close="closeTransaction"
-          />
+          <UButton label="Cancel" type="reset" variant="ghost" />
         </div>
-      </div>
-      <UDivider class="my-8" />
-      <div v-if="!isLoading">
+      </UForm>
+    </UModal>
+    <UContainer>
+      <template v-if="transactionStore.isLoading.getAll">
+        <USkeleton
+          v-for="skeleton in 4"
+          :key="skeleton"
+          class="h-8 w-full mb-4"
+        />
+      </template>
+      <template v-else>
         <div
-          v-for="(transactionsOnDay, date) in transactionsGroupByDate"
+          v-for="(
+            transactionsByDate, date
+          ) in transactionStore.transactionsGroupByDate"
           :key="date"
           class="mb-12"
         >
           <TransactionDailySummery
             :date="(date as string)"
-            :transactions="transactionsOnDay"
+            :transactions="transactionsByDate"
           />
           <Transaction
-            v-for="transaction in transactionsOnDay"
-            :key="transaction.id"
-            :transaction="transaction"
-            :is-loading="deleteIsLoading"
-            :selected-transaction-id="selectedTransactionId"
-            @delete="deleteTransaction(transaction.id)"
-            @get="getTransaction"
+            :transactions="transactionsByDate"
+            :is-loading="transactionStore.isLoading.deleteOneById"
+            @edit="transactionOnEdit"
+            @delete="transactionOnDelete"
           />
         </div>
-      </div>
-      <div v-else class="space-y-4">
-        <USkeleton v-for="item in 5" :key="item" class="h-8 w-full " />
-      </div>
+      </template>
     </UContainer>
   </section>
 </template>
 <script setup lang="ts">
+import { transactionSchemaOnCreate } from "~/schema/transaction.schema";
 import type { Transaction } from "~/types/transaction.model";
 
-const { data: transactions, refresh } = await useFetch<Transaction[]>(
-  "/api/v1/transaction"
-);
+const transactionStore = useTransactionStore();
+await transactionStore.getAll();
 
+const transactionOnEdit = async (id: number) => {
+  isOpen.value = true;
+  await transactionStore.getOneById(id);
+};
+const transactionOnDelete = async (id: number) => {
+  await transactionStore.deleteOneById(id);
+  await transactionStore.getAll();
+};
 const isOpen = ref(false);
-const state = ref<Transaction>({
-  amount: 0,
-  category: "",
-  description: "",
-  type: "",
-  id: 0,
-  createdAt: "",
-});
-
-const closeTransaction = () => {
+const closeModal = () => {
   isOpen.value = false;
   setTimeout(() => {
-    state.value = {} as Transaction;
+    transactionStore.transaction = {} as Transaction;
   }, 300);
 };
-
-const deleteIsLoading = ref(false);
-const selectedTransactionId = ref<number>(-1);
-const toast = useToast();
-const deleteTransaction = async (id: number) => {
-  deleteIsLoading.value = true;
-
-  selectedTransactionId.value = id;
+const submitForm = async () => {
   try {
-    await useFetch(`/api/v1/transaction/${id}`, {
-      method: "DELETE",
-    });
-    toast.add({
-      title: "Deleted success",
-      description: `transaction width id:${id} is deleted`,
-      icon: "i-heroicons-check-circle",
-      color: "green",
-    });
-    isLoading.value = true;
-    await refresh();
-  } catch (error) {
-    console.log(error);
-    toast.add({
-      title: "Deleted has Error",
-      description: `transaction width id:${id} has ${(error as Error).message}`,
-      icon: "i-heroicons-check-circle",
-      color: "red",
-    });
-  } finally {
-    deleteIsLoading.value = false;
-    isLoading.value = false;
-    selectedTransactionId.value = -1;
-  }
-};
-
-const isEdit = ref(false);
-const getTransaction = async (id: number) => {
-  const { data } = await useFetch<Transaction>(`/api/v1/transaction/${id}`, {
-    method: "get",
-  });
-  state.value = data.value as Transaction;
-  isEdit.value = true;
-  isOpen.value = true;
-};
-
-const isLoading = ref(false);
-
-const addTransaction = async () => {
-  isLoading.value = true;
-  try {
-    await useFetch("/api/v1/transaction/create", {
-      method: "POST",
-      body: state.value as Transaction,
-    });
-    await toast.add({
-      title: "Success add",
-    });
-    await refresh();
-  } catch (error) {
-    toast.add({
-      title: "error add",
-      color: "red",
-      description: (error as Error).message,
-    });
-  } finally {
-    isLoading.value = false;
-    isOpen.value = false;
-    state.value = {} as Transaction;
-  }
-};
-const editTransaction = async () => {
-  const { data } = await useFetch<Transaction>(
-    `/api/v1/transaction/${state.value.id}`,
-    {
-      method: "PUT",
-      body: state.value,
+    if (transactionStore.transaction.id) {
+      await transactionStore.editOne();
+    } else {
+      await transactionStore.createOne();
     }
-  );
-  console.log(data.value);
-  isEdit.value = false;
-  isOpen.value = false;
-};
-interface Grouped {
-  [key: string]: Transaction[];
-}
-const { $dateConvertor } = useNuxtApp();
-const transactionsGroupByDate = computed(() => {
-  const grouped: Grouped = {};
-  for (const transaction of transactions.value ?? []) {
-    const date = $dateConvertor(transaction.createdAt);
-    if (!grouped[date]) {
-      grouped[date] = [];
-    }
-    grouped[date].push(transaction);
+  } catch (error) {
+    console.log((error as Error).message);
+  } finally {
+    await transactionStore.getAll();
+    closeModal();
   }
-  return grouped;
-});
+};
 </script>
