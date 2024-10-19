@@ -10,7 +10,6 @@ export default defineEventHandler(async (event) => {
   }
 
   const supabase = createClient(supabaseUrl, supabaseKey);
-
   try {
     const { data } = await supabase
       .from("transactions")

@@ -12,6 +12,7 @@ export default defineNuxtConfig({
     "@nuxt/eslint",
     "@nuxtjs/supabase",
     "dayjs-nuxt",
+    "@pinia/nuxt",
   ],
   plugins: ["~/plugins/logger"],
   supabase: {
