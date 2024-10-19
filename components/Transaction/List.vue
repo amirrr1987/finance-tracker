@@ -71,6 +71,7 @@
 import { transactionSchemaOnCreate } from "~/schema/transaction.schema";
 import type { Transaction } from "~/types/transaction.model";
 
+const toast = useToast();
 const transactionStore = useTransactionStore();
 await transactionStore.getAll();
 
@@ -80,6 +81,10 @@ const transactionOnEdit = async (id: number) => {
 };
 const transactionOnDelete = async (id: number) => {
   await transactionStore.deleteOneById(id);
+  toast.add({
+    title: "Transaction is deleted",
+    description: `Transaction width id:${id} is deleted`,
+  });
   await transactionStore.getAll();
 };
 const isOpen = ref(false);
@@ -93,8 +98,16 @@ const submitForm = async () => {
   try {
     if (transactionStore.transaction.id) {
       await transactionStore.editOne();
+      toast.add({
+        title: "Transaction is updated",
+        description: `Transaction width id:${transactionStore.transaction.id} is updated`,
+      });
     } else {
       await transactionStore.createOne();
+      toast.add({
+        title: "Transaction is created",
+        description: `Transaction  is created`,
+      });
     }
   } catch (error) {
     console.log((error as Error).message);
