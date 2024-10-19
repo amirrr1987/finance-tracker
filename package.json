@@ -21,6 +21,8 @@
     "add": "^2.0.6",
     "console-log-advanced": "^1.5.0",
     "countries-currency-locale": "1.0.2",
+    "dayjs-nuxt": "^2.1.11",
+    "jalaliday": "^2.3.0",
     "lodash": "^4.17.21",
     "module": "^1.2.5",
     "nuxi": "^3.14.0",

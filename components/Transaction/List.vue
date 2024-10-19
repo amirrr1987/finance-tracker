@@ -50,7 +50,7 @@ const { data: transactions, refresh } = await useFetch<Transaction[]>(
   "/api/v1/transaction"
 );
 
-const isOpen = ref(false)
+const isOpen = ref(false);
 const state = ref<Transaction>({
   amount: 0,
   category: "",
@@ -100,7 +100,7 @@ const addTransaction = async () => {
   try {
     await useFetch("/api/v1/transaction/create", {
       method: "POST",
-      body: { ...state.value } as Transaction,
+      body: state.value as Transaction,
     });
     await toast.add({
       title: "Success add",
@@ -133,13 +133,15 @@ const editTransaction = async () => {
 interface Grouped {
   [key: string]: Transaction[];
 }
+const { $dateConvertor } = useNuxtApp();
 const transactionsGroupByDate = computed(() => {
   const grouped: Grouped = {};
   for (const transaction of transactions.value ?? []) {
-    const date = new Date(transaction.createdAt).toISOString().split("T")[0];
+    const date = $dateConvertor(transaction.createdAt);
     if (!grouped[date]) {
       grouped[date] = [];
     }
+
     grouped[date].push(transaction);
   }
   return grouped;

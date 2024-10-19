@@ -11,6 +11,7 @@ export default defineNuxtConfig({
     "@nuxt/content",
     "@nuxt/eslint",
     "@nuxtjs/supabase",
+    "dayjs-nuxt",
   ],
   plugins: ["~/plugins/logger"],
   supabase: {
@@ -21,4 +22,10 @@ export default defineNuxtConfig({
     },
   },
   ui: {},
+  dayjs: {
+    locales: ["en", "fa"],
+    plugins: ["relativeTime", "utc", "timezone", "isLeapYear"],
+    defaultLocale: "fa",
+    defaultTimezone: "America/New_York",
+  },
 });

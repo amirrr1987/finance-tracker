@@ -4,4 +4,7 @@ declare module "#app" {
   interface NuxtApp {
     $clg: ConsoleLogAdvanced;
   }
+  interface NuxtApp {
+    $dateConvertor: (_input: string | Dayjs) => string;
+  }
 }
