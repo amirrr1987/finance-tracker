@@ -22,24 +22,29 @@
         </div>
       </div>
       <UDivider class="my-8" />
-      <div
-        v-for="(transactionsOnDay, date) in transactionsGroupByDate"
-        :key="date"
-        class="mb-12"
-      >
-        <TransactionDailySummery
-          :date="(date as string)"
-          :transactions="transactionsOnDay"
-        />
-        <Transaction
-          v-for="transaction in transactionsOnDay"
-          :key="transaction.id"
-          :transaction="transaction"
-          :is-loading="deleteIsLoading"
-          :selected-transaction-id="selectedTransactionId"
-          @delete="deleteTransaction(transaction.id)"
-          @get="getTransaction"
-        />
+      <div v-if="!isLoading">
+        <div
+          v-for="(transactionsOnDay, date) in transactionsGroupByDate"
+          :key="date"
+          class="mb-12"
+        >
+          <TransactionDailySummery
+            :date="(date as string)"
+            :transactions="transactionsOnDay"
+          />
+          <Transaction
+            v-for="transaction in transactionsOnDay"
+            :key="transaction.id"
+            :transaction="transaction"
+            :is-loading="deleteIsLoading"
+            :selected-transaction-id="selectedTransactionId"
+            @delete="deleteTransaction(transaction.id)"
+            @get="getTransaction"
+          />
+        </div>
+      </div>
+      <div v-else class="space-y-4">
+        <USkeleton v-for="item in 5" :key="item" class="h-8 w-full " />
       </div>
     </UContainer>
   </section>
@@ -70,24 +75,34 @@ const closeTransaction = () => {
 
 const deleteIsLoading = ref(false);
 const selectedTransactionId = ref<number>(-1);
-const tosat = useToast()
+const toast = useToast();
 const deleteTransaction = async (id: number) => {
   deleteIsLoading.value = true;
+
   selectedTransactionId.value = id;
   try {
     await useFetch(`/api/v1/transaction/${id}`, {
       method: "DELETE",
     });
+    toast.add({
+      title: "Deleted success",
+      description: `transaction width id:${id} is deleted`,
+      icon: "i-heroicons-check-circle",
+      color: "green",
+    });
+    isLoading.value = true;
     await refresh();
-    tosat.add({
-      title: 'Deleted success',
-      description: `${id} deleted success`,
-      icon: 'i-heroicons-check-circle'
-    })
   } catch (error) {
     console.log(error);
+    toast.add({
+      title: "Deleted has Error",
+      description: `transaction width id:${id} has ${(error as Error).message}`,
+      icon: "i-heroicons-check-circle",
+      color: "red",
+    });
   } finally {
     deleteIsLoading.value = false;
+    isLoading.value = false;
     selectedTransactionId.value = -1;
   }
 };
@@ -103,7 +118,6 @@ const getTransaction = async (id: number) => {
 };
 
 const isLoading = ref(false);
-const toast = useToast();
 
 const addTransaction = async () => {
   isLoading.value = true;
@@ -151,7 +165,6 @@ const transactionsGroupByDate = computed(() => {
     if (!grouped[date]) {
       grouped[date] = [];
     }
-
     grouped[date].push(transaction);
   }
   return grouped;
