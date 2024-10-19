@@ -1,9 +1,9 @@
 <template>
   <div class="flex justify-between text-gray-400">
-    <div class="ms-4">
+    <div class="ms-8">
       {{ props.date }}
     </div>
-    <div class="me-12">
+    <div class="me-8">
       {{ currency }}
     </div>
   </div>
