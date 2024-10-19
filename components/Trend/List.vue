@@ -10,29 +10,32 @@
         title="Income"
         :amount="300"
         :last-amount="400"
-        :loading="false"
+        :loading="transactionStore.isLoading.getAll"
       />
       <Trend
         color="red"
-        title="Income"
+        title="Expense"
         :amount="9900"
         :last-amount="1"
-        :loading="false"
+        :loading="transactionStore.isLoading.getAll"
       />
       <Trend
         color="green"
         title="Income"
         :amount="4000"
         :last-amount="3000"
-        :loading="true"
+        :loading="transactionStore.isLoading.getAll"
       />
       <Trend
         color="green"
         title="Income"
         :amount="4000"
         :last-amount="3000"
-        :loading="true"
+        :loading="transactionStore.isLoading.getAll"
       />
     </UContainer>
   </section>
 </template>
+<script setup lang="ts">
+const transactionStore = useTransactionStore();
+</script>
