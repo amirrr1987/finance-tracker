@@ -13,6 +13,10 @@ export default defineNuxtConfig({
     "@nuxtjs/supabase",
     "dayjs-nuxt",
     "@pinia/nuxt",
+    "nuxt-typed-router",
+    "@morev/vue-transitions/nuxt",
+    "@vueuse/nuxt",
+    "nuxt-lodash",
   ],
   plugins: ["~/plugins/logger"],
   supabase: {
