@@ -18,6 +18,8 @@
     "@nuxt/ui": "^2.18.7",
     "@nuxtjs/color-mode": "^3.5.1",
     "@nuxtjs/supabase": "^1.4.1",
+    "@vueuse/core": "^11.1.0",
+    "@vueuse/nuxt": "^11.1.0",
     "add": "^2.0.6",
     "console-log-advanced": "^1.5.0",
     "countries-currency-locale": "1.0.2",
