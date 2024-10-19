@@ -1,69 +1,76 @@
 <template>
-  <div class="grid grid-cols-2 gap-4 md:gap-6 lg:gap-8">
-    <div class="flex items-center justify-between">
-      <div class="flex items-center space-x-1">
-        <UIcon :name="icon" :class="iconColor" />
-        <div>{{ props.transaction.description }}</div>
-      </div>
-      <div>
-        <UBadge v-if="props.transaction.category" color="white">
-          {{ props.transaction.category }}
-        </UBadge>
-      </div>
-    </div>
-    <div class="flex gap-x-4 justify-end">
-      <div>{{ currency }}</div>
-      <div>
-        <UDropdown :items="items" :popper="{ placement: 'bottom-start' }">
-          <UButton
-            :color="props.selectedTransactionId === props.transaction.id ? 'rose': 'white'"
-            trailing-icon="i-heroicons-ellipsis-horizontal"
-            variant="link"
-            :loading="props.selectedTransactionId === props.transaction.id"
+  <div class="space-y-4">
+    <template v-for="transaction in props.transactions" :key="transaction.id">
+      <div class="flex justify-between">
+        <div class="flex gap-x-4 items-center">
+          <UIcon
+            :name="getIcon(transaction.type)"
+            :class="getIconColor(transaction.type)"
           />
-        </UDropdown>
+          <h3>{{ transaction.description }}</h3>
+        </div>
+        <div class="flex items-center">
+          <div>{{ useCurrency(transaction.amount).currency }}</div>
+          <ClientOnly>
+            <UDropdown
+              :items="getDropdownItems(transaction.id)"
+              :popper="{ placement: 'bottom-start' }"
+            >
+              <UButton
+                trailing-icon="i-heroicons-ellipsis-horizontal"
+                variant="link"
+                :loading="
+                  selectedTransactionId === transaction.id
+                    ? props.isLoading
+                    : false
+                "
+              />
+            </UDropdown>
+          </ClientOnly>
+        </div>
       </div>
-    </div>
+      <UDivider />
+    </template>
   </div>
-  <UDivider class="my-4" />
 </template>
 <script setup lang="ts">
 import type { Transaction } from "~/types/transaction.model";
 
 interface Props {
-  transaction: Transaction;
+  transactions: Transaction[];
   isLoading: boolean;
-  selectedTransactionId: number;
 }
 
 const props = withDefaults(defineProps<Props>(), {});
-const { currency } = useCurrency(props.transaction.amount);
 
-const isIncome = computed(() => props.transaction.type === "Income");
-
-const icon = computed(() => {
-  return isIncome.value
+const getIcon = (type: string) => {
+  return type === "Income"
     ? "i-heroicons-arrow-up-right"
     : "i-heroicons-arrow-down-left";
-});
+};
 
-const iconColor = computed(() => {
-  return isIncome.value ? "text-green-600" : "text-red-600";
-});
+const getIconColor = (type: string) => {
+  return type === "Income" ? "text-green-600" : "text-red-600";
+};
 
-const emits = defineEmits(["delete", "get"]);
-const items = [
+const emits = defineEmits(["edit", "delete"]);
+const selectedTransactionId = ref(-1);
+const getDropdownItems = (id: number) => [
   [
     {
       icon: "i-heroicons-pencil",
       label: "Edit",
-      click: () => emits("get", props.transaction.id),
+      click: () => {
+        selectedTransactionId.value = id;
+        emits("edit", id);
+      },
     },
     {
       icon: "i-heroicons-trash",
       label: "Delete",
       click: () => {
-        emits("delete", props.transaction.id);
+        selectedTransactionId.value = id;
+        emits("delete", id);
       },
     },
   ],
