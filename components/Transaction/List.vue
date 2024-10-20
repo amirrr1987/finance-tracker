@@ -53,15 +53,19 @@
           class="mb-12"
         >
           <TransactionDailySummery
-            :date="(date as string)"
             :transactions="transactionsByDate"
+            :date="date"
           />
-          <Transaction
-            :transactions="transactionsByDate"
-            :is-loading="transactionStore.isLoading.deleteOneById"
-            @edit="transactionOnEdit"
-            @delete="transactionOnDelete"
-          />
+          <div class="space-y-4">
+            <Transaction
+              v-for="transaction in transactionsByDate"
+              :key="transaction.id"
+              :transaction="transaction"
+              :is-loading="transactionStore.isLoading.deleteOneById"
+              @edit="transactionOnEdit"
+              @delete="transactionOnDelete"
+            />
+          </div>
         </div>
       </template>
     </UContainer>
