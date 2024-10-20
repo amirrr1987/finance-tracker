@@ -37,6 +37,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/lodash": "^4.17.10"
+    "@types/lodash": "^4.17.10",
+    "nuxt-lodash": "^2.5.3"
   }
 }

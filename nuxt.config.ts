@@ -26,7 +26,6 @@ export default defineNuxtConfig({
       callback: "/",
     },
   },
-  ui: {},
   dayjs: {
     locales: ["en", "fa"],
     plugins: ["relativeTime", "utc", "timezone", "isLeapYear"],
