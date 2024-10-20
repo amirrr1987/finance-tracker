@@ -34,7 +34,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {});
 
-const isIncome = computed(() => props.transaction.type === 'Income');
+const isIncome = computed(() => props.transaction.type === "Income");
 const icon = computed(() => {
   return isIncome.value
     ? "i-heroicons-arrow-up-right"
