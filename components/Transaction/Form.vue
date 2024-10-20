@@ -4,7 +4,7 @@
       <h3
         class="text-base font-semibold leading-6 text-gray-900 dark:text-white"
       >
-        {{ props.state.description }}
+        {{ props.transaction.description }}
       </h3>
       <UButton
         color="gray"
@@ -16,35 +16,55 @@
     </div>
     <UForm
       :schema="transactionSchemaOnCreate"
-      :state="props.state"
+      :state="props.transaction"
       class="p-4 space-y-4"
-      @submit="props.isEdit ? emits('edit') : emits('add')"
+      @submit="emits('submit')"
       @reset="emits('close')"
     >
       <UFormGroup label="amount" name="amount">
         <UInput
           type="number"
-          :model-value="props.state.amount"
-          @input="(event: Event) => emits('update:state', { ...props.state, amount: Number((event.target as HTMLInputElement).value) })"
+          :model-value="props.transaction.amount"
+          @input="
+            (event: Event) =>
+              emits('update:transaction', {
+                ...props.transaction,
+                amount: Number((event.target as HTMLInputElement).value),
+              })
+          "
         />
       </UFormGroup>
       <UFormGroup label="category" name="category">
         <UInput
-          :model-value="props.state.category"
-          @input="(event: Event) => emits('update:state', { ...props.state, category: (event.target as HTMLInputElement).value })"
+          :model-value="props.transaction.category"
+          @input="
+            (event: Event) =>
+              emits('update:transaction', {
+                ...props.transaction,
+                category: (event.target as HTMLInputElement).value,
+              })
+          "
         />
       </UFormGroup>
       <UFormGroup label="description" name="description">
         <UInput
-          :model-value="props.state.description"
-          @input="(event: Event) => emits('update:state', { ...props.state, description: (event.target as HTMLInputElement).value })"
+          :model-value="props.transaction.description"
+          @input="
+            (event: Event) =>
+              emits('update:transaction', {
+                ...props.transaction,
+                description: (event.target as HTMLInputElement).value,
+              })
+          "
         />
       </UFormGroup>
       <UFormGroup label="type" name="type">
         <USelect
-          :model-value="props.state.type"
+          :model-value="props.transaction.type"
           :options="items"
-          @change="(event: Event) => emits('update:state', { ...props.state, type: event })
+          @change="
+            (event: Event) =>
+              emits('update:transaction', { ...props.transaction, type: event })
           "
         />
       </UFormGroup>
@@ -59,18 +79,16 @@
 import { transactionSchemaOnCreate } from "~/schema/transaction.schema";
 import type { Transaction } from "~/types/transaction.model";
 interface Props {
-  state: Transaction;
-  isEdit: boolean;
-  isLoading: boolean
+  transaction: Transaction;
+  isLoading: boolean;
 }
 const props = withDefaults(defineProps<Props>(), {
-  state: () => ({} as Transaction),
-  isEdit: false,
-  isLoading: false
+  transaction: () => ({}) as Transaction,
+  isLoading: false,
 });
 
-const emits = defineEmits(["add", "close", "edit", "update:state"]);
-const items = ["Income", "Outcome"];
+const emits = defineEmits(["submit", "close", "update:transaction"]);
+const items = ["Income", "Expense"];
 
 const ui = {
   base: "p-2",
