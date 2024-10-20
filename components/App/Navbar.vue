@@ -12,7 +12,7 @@
         <ClientOnly>
           <USelect
             v-model="colorMode.preference"
-            :options="['light', 'dark']"
+            :options="['light', 'dark', 'sepia']"
           />
         </ClientOnly>
       </div>
@@ -22,3 +22,17 @@
 <script setup lang="ts">
 const colorMode = useColorMode();
 </script>
+<style>
+.light {
+  background-color: #fff;
+  color: hsla(0, 0%, 0%, 0.479);
+}
+.dark {
+  background-color: #091a28;
+  color: #ebf4f1;
+}
+.sepia {
+  background-color: #f1e7d0;
+  color: #433422;
+}
+</style>
