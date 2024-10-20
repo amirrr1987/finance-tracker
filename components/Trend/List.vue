@@ -8,28 +8,28 @@
       <Trend
         color="green"
         title="Income"
-        :amount="inComesTotal"
+        :amount="transactionStore.inComesTotal"
         :last-amount="400"
         :loading="transactionStore.isLoading.getAll"
       />
       <Trend
         color="red"
         title="Expense"
-        :amount="expenseTotal"
+        :amount="transactionStore.expenseTotal"
         :last-amount="1"
         :loading="transactionStore.isLoading.getAll"
       />
       <Trend
         color="green"
         title="Income"
-        :amount="inComesTotal"
+        :amount="transactionStore.inComesTotal"
         :last-amount="3000"
         :loading="transactionStore.isLoading.getAll"
       />
       <Trend
         color="green"
         title="Income"
-        :amount="expenseTotal"
+        :amount="transactionStore.expenseTotal"
         :last-amount="3000"
         :loading="transactionStore.isLoading.getAll"
       />
@@ -39,7 +39,7 @@
     <UContainer class="text-center">
       <h3 class="text-2xl font-extrabold mb-2">Transactions</h3>
       <p class="text-gray-600 dark:text-gray-400">
-        You has {{ inComeCount }} Incomes and {{ expenseCount }} expenses this
+        You has {{ transactionStore.inComeCount }} Incomes and {{ transactionStore.expenseCount }} expenses this
         period
       </p>
     </UContainer>
@@ -47,25 +47,4 @@
 </template>
 <script setup lang="ts">
 const transactionStore = useTransactionStore();
-
-const inComes = computed(() =>
-  transactionStore.transactions.filter((i) => i.type === "Income")
-);
-const inComeCount = computed(() => inComes.value.length);
-const inComesTotal = computed(() => {
-  return inComes.value.reduce(
-    (sum, transaction) => sum + transaction.amount,
-    0
-  );
-});
-const expenses = computed(() => {
-  return transactionStore.transactions.filter((i) => i.type === "Expense");
-});
-const expenseCount = computed(() => expenses.value.length);
-const expenseTotal = computed(() => {
-  return expenses.value.reduce(
-    (sum, transaction) => sum + transaction.amount,
-    0
-  );
-});
 </script>
