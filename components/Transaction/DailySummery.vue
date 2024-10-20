@@ -14,7 +14,7 @@ import type { Transaction } from "~/types/transaction.model";
 
 interface Props {
   transactions: Transaction[];
-  date: string;
+  date: string | number;
 }
 const props = withDefaults(defineProps<Props>(), {});
 
