@@ -37,13 +37,10 @@ export const useTransactionStore = defineStore("transaction", () => {
   const getOneById = async (id: number) => {
     isLoading.value.getOneById = true;
     try {
-      const { data } = await useFetch<Transaction>(
-        `/api/v1/transaction/${id}`,
-        {
-          method: "get",
-        }
-      );
-      transaction.value = data.value as Transaction;
+      const data  = await $fetch<Transaction>(`/api/v1/transaction/${id}`, {
+        method: "get",
+      });
+      transaction.value = data as Transaction;
     } catch (error) {
       console.log((error as Error).message);
     } finally {
