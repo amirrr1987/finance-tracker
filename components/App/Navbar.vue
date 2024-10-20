@@ -24,12 +24,12 @@ const colorMode = useColorMode();
 </script>
 <style>
 .light {
-  background-color: #fff;
-  color: hsla(0, 0%, 0%, 0.479);
+  background-color: #f1f1f1;
+  color: #091a28;
 }
 .dark {
   background-color: #091a28;
-  color: #ebf4f1;
+  color: #f1f1f1;
 }
 .sepia {
   background-color: #f1e7d0;
