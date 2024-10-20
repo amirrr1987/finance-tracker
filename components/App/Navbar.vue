@@ -24,7 +24,7 @@ const colorMode = useColorMode();
 </script>
 <style>
 .light {
-  background-color: #f1f1f1;
+  background-color: #fefefe;
   color: #091a28;
 }
 .dark {
