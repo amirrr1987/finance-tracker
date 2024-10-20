@@ -52,14 +52,20 @@ const inComes = computed(() =>
   transactionStore.transactions.filter((i) => i.type === "Income")
 );
 const inComeCount = computed(() => inComes.value.length);
-const inComesTotal = computed(() =>
-  inComes.value.reduce((sum, transaction) => sum + transaction.amount, 0)
-);
-const expenses = computed(() =>
-  transactionStore.transactions.filter((i) => i.type === "Expense")
-);
+const inComesTotal = computed(() => {
+  return inComes.value.reduce(
+    (sum, transaction) => sum + transaction.amount,
+    0
+  );
+});
+const expenses = computed(() => {
+  return transactionStore.transactions.filter((i) => i.type === "Expense");
+});
 const expenseCount = computed(() => expenses.value.length);
-const expenseTotal = computed(() =>
-  expenses.value.reduce((sum, transaction) => sum + transaction.amount, 0)
-);
+const expenseTotal = computed(() => {
+  return expenses.value.reduce(
+    (sum, transaction) => sum + transaction.amount,
+    0
+  );
+});
 </script>
