@@ -1,11 +1,10 @@
 <template>
-  <UModal :ui="ui" prevent-close>
+  <UModal :ui="ui" prevent-close appear>
     <div class="flex items-center justify-between">
       <h3
         class="text-base font-semibold leading-6 text-gray-900 dark:text-white"
       >
         {{ props.transaction.description }}
-        {{ descriptionComputed }}
       </h3>
       <UButton
         color="gray"
@@ -27,7 +26,7 @@
       </UFormGroup>
 
       <UFormGroup label="Description" name="description" required>
-        <UTextarea :rows="6" v-model="descriptionComputed" />
+        <UTextarea v-model="descriptionComputed" :rows="6" />
       </UFormGroup>
       <div class="grid grid-cols-2 gap-x-4">
         <UFormGroup label="Category" name="category" required>
