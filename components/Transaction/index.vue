@@ -1,17 +1,14 @@
 <template>
   <div class="flex justify-between">
     <div class="flex gap-x-4 items-center">
-      <UIcon
-        :name="getIcon(props.transaction.type)"
-        :class="getIconColor(props.transaction.type)"
-      />
+      <UIcon :name="icon" :class="iconColor" />
       <h3>{{ props.transaction.description }}</h3>
     </div>
     <div class="flex items-center">
-      <div>{{ useCurrency(props.transaction.amount).currency }}</div>
+      <div>{{ currency }}</div>
       <ClientOnly>
         <UDropdown
-          :items="getDropdownItems(props.transaction.id)"
+          :items="dropdownItems"
           :popper="{ placement: 'bottom-start' }"
         >
           <UButton
@@ -37,36 +34,41 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {});
 
-const getIcon = (type: string) => {
-  return type === "Income"
+const isIncome = computed(() => props.transaction.type);
+const icon = computed(() => {
+  return isIncome.value
     ? "i-heroicons-arrow-up-right"
     : "i-heroicons-arrow-down-left";
-};
+});
 
-const getIconColor = (type: string) => {
-  return type === "Income" ? "text-green-600" : "text-red-600";
-};
+const iconColor = computed(() => {
+  return isIncome.value ? "text-green-600" : "text-red-600";
+});
+
+const currency = computed(() => useCurrency(props.transaction.amount).currency);
 
 const emits = defineEmits(["edit", "delete"]);
 const selectedTransactionId = ref(-1);
-const getDropdownItems = (id: number) => [
-  [
-    {
-      icon: "i-heroicons-pencil",
-      label: "Edit",
-      click: () => {
-        selectedTransactionId.value = id;
-        emits("edit", id);
+const dropdownItems = computed(() => {
+  return [
+    [
+      {
+        icon: "i-heroicons-pencil",
+        label: "Edit",
+        click: () => {
+          selectedTransactionId.value = props.transaction.id;
+          emits("edit", props.transaction.id);
+        },
       },
-    },
-    {
-      icon: "i-heroicons-trash",
-      label: "Delete",
-      click: () => {
-        selectedTransactionId.value = id;
-        emits("delete", id);
+      {
+        icon: "i-heroicons-trash",
+        label: "Delete",
+        click: () => {
+          selectedTransactionId.value = props.transaction.id;
+          emits("delete", props.transaction.id);
+        },
       },
-    },
-  ],
-];
+    ],
+  ];
+});
 </script>
