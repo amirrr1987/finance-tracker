@@ -30,6 +30,7 @@
     "module": "^1.2.5",
     "nuxi": "^3.14.0",
     "nuxt": "^3.13.0",
+    "nuxt-typed-router": "^3.7.0",
     "pinia": "^2.2.4",
     "supabase": "^1.204.3",
     "vue": "latest",
