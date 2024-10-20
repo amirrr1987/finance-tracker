@@ -32,7 +32,7 @@ const colorMode = useColorMode();
   color: #f1f1f1;
 }
 .sepia {
-  background-color: #f1e7d0;
-  color: #433422;
+  background-color: #f3dfad;
+  color: #5B4636;
 }
 </style>
