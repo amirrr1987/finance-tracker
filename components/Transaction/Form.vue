@@ -27,7 +27,7 @@
       </UFormGroup>
 
       <UFormGroup label="Description" name="description" required>
-        <UTextarea v-model="descriptionComputed" />
+        <UTextarea :rows="6" v-model="descriptionComputed" />
       </UFormGroup>
       <div class="grid grid-cols-2 gap-x-4">
         <UFormGroup label="Category" name="category" required>
