@@ -1,41 +1,20 @@
 <template>
   <section class="py-4 md:py-6 lg:py-8">
-    <UModal v-model="isOpen">
-      <UForm
-        :schema="transactionSchemaOnCreate"
-        :state="transactionStore.transaction"
-        class="p-4 space-y-4"
+    <UContainer class="">
+      <TransactionForm
+        v-model="isOpen"
+        v-model:transaction="transactionStore.transaction"
+        :is-loading="
+          transactionStore.isLoading.createOne ||
+          transactionStore.isLoading.editOne
+        "
         @submit="submitForm"
-        @reset="closeModal"
-      >
-        <UFormGroup label="amount" name="amount">
-          <UInput v-model="transactionStore.transaction.amount" type="number" />
-        </UFormGroup>
-        <UFormGroup label="category" name="category">
-          <UInput v-model="transactionStore.transaction.category" />
-        </UFormGroup>
-        <UFormGroup label="description" name="description">
-          <UInput v-model="transactionStore.transaction.description" />
-        </UFormGroup>
-        <UFormGroup label="type" name="type">
-          <USelect
-            v-model="transactionStore.transaction.type"
-            :options="['Income', 'Expose']"
-          />
-        </UFormGroup>
-        <div class="space-x-4">
-          <UButton
-            label="Submit"
-            type="submit"
-            :loading="
-              transactionStore.isLoading.createOne ||
-              transactionStore.isLoading.editOne
-            "
-          />
-          <UButton label="Cancel" type="reset" variant="ghost" />
-        </div>
-      </UForm>
-    </UModal>
+        @close="closeModal"
+      />
+      <UButton label="Add" icon="i-heroicons-plus" @click="isOpen = true" />
+    </UContainer>
+  </section>
+  <section class="py-4 md:py-6 lg:py-8">
     <UContainer>
       <template v-if="transactionStore.isLoading.getAll">
         <USkeleton
@@ -72,7 +51,6 @@
   </section>
 </template>
 <script setup lang="ts">
-import { transactionSchemaOnCreate } from "~/schema/transaction.schema";
 import type { Transaction } from "~/types/transaction.model";
 
 const toast = useToast();
@@ -94,9 +72,7 @@ const transactionOnDelete = async (id: number) => {
 const isOpen = ref(false);
 const closeModal = () => {
   isOpen.value = false;
-  setTimeout(() => {
-    transactionStore.transaction = {} as Transaction;
-  }, 300);
+  transactionStore.transaction = {} as Transaction;
 };
 const submitForm = async () => {
   try {
@@ -116,8 +92,9 @@ const submitForm = async () => {
   } catch (error) {
     console.log((error as Error).message);
   } finally {
-    await transactionStore.getAll();
     closeModal();
+
+    await transactionStore.getAll();
   }
 };
 </script>
