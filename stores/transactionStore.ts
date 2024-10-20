@@ -15,7 +15,8 @@ export const useTransactionStore = defineStore("transaction", () => {
     isLoading.value.getAll = true;
     try {
       const data = await $fetch<Transaction[]>("/api/v1/transaction");
-      transactions.value = data ?? [];
+      transactions.value = [];
+      transactions.value = data;
     } catch (error) {
       console.log((error as Error).message);
     } finally {
@@ -37,7 +38,7 @@ export const useTransactionStore = defineStore("transaction", () => {
   const getOneById = async (id: number) => {
     isLoading.value.getOneById = true;
     try {
-      const data  = await $fetch<Transaction>(`/api/v1/transaction/${id}`, {
+      const data = await $fetch<Transaction>(`/api/v1/transaction/${id}`, {
         method: "get",
       });
       transaction.value = data as Transaction;
@@ -90,6 +91,28 @@ export const useTransactionStore = defineStore("transaction", () => {
     }
     return grouped;
   });
+
+  const inComes = computed(() => {
+    return transactions.value.filter((i) => i.type === "Income");
+  });
+  const inComeCount = computed(() => inComes.value.length);
+  const inComesTotal = computed(() => {
+    return inComes.value.reduce(
+      (sum: number, transaction: Transaction) => sum + transaction.amount,
+      0
+    );
+  });
+  const expenses = computed(() => {
+    return transactions.value.filter((i: Transaction) => i.type === "Expense");
+  });
+  const expenseCount = computed(() => expenses.value.length);
+  const expenseTotal = computed(() => {
+    return expenses.value.reduce(
+      (sum: number, transaction: Transaction) => sum + transaction.amount,
+      0
+    );
+  });
+
   return {
     transaction,
     transactions,
@@ -100,5 +123,11 @@ export const useTransactionStore = defineStore("transaction", () => {
     createOne,
     editOne,
     transactionsGroupByDate,
+    inComes,
+    inComeCount,
+    inComesTotal,
+    expenses,
+    expenseCount,
+    expenseTotal,
   };
 });
