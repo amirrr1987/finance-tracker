@@ -1,43 +1,37 @@
 <template>
-  <div class="space-y-4">
-    <template v-for="transaction in props.transactions" :key="transaction.id">
-      <div class="flex justify-between">
-        <div class="flex gap-x-4 items-center">
-          <UIcon
-            :name="getIcon(transaction.type)"
-            :class="getIconColor(transaction.type)"
+  <div class="flex justify-between">
+    <div class="flex gap-x-4 items-center">
+      <UIcon
+        :name="getIcon(props.transaction.type)"
+        :class="getIconColor(props.transaction.type)"
+      />
+      <h3>{{ props.transaction.description }}</h3>
+    </div>
+    <div class="flex items-center">
+      <div>{{ useCurrency(props.transaction.amount).currency }}</div>
+      <ClientOnly>
+        <UDropdown
+          :items="getDropdownItems(props.transaction.id)"
+          :popper="{ placement: 'bottom-start' }"
+        >
+          <UButton
+            trailing-icon="i-heroicons-ellipsis-horizontal"
+            variant="link"
+            :loading="
+              selectedTransactionId === transaction.id ? props.isLoading : false
+            "
           />
-          <h3>{{ transaction.description }}</h3>
-        </div>
-        <div class="flex items-center">
-          <div>{{ useCurrency(transaction.amount).currency }}</div>
-          <ClientOnly>
-            <UDropdown
-              :items="getDropdownItems(transaction.id)"
-              :popper="{ placement: 'bottom-start' }"
-            >
-              <UButton
-                trailing-icon="i-heroicons-ellipsis-horizontal"
-                variant="link"
-                :loading="
-                  selectedTransactionId === transaction.id
-                    ? props.isLoading
-                    : false
-                "
-              />
-            </UDropdown>
-          </ClientOnly>
-        </div>
-      </div>
-      <UDivider />
-    </template>
+        </UDropdown>
+      </ClientOnly>
+    </div>
   </div>
+  <UDivider />
 </template>
 <script setup lang="ts">
 import type { Transaction } from "~/types/transaction.model";
 
 interface Props {
-  transactions: Transaction[];
+  transaction: Transaction;
   isLoading: boolean;
 }
 
