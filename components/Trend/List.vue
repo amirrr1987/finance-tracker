@@ -39,8 +39,8 @@
     <UContainer class="text-center">
       <h3 class="text-2xl font-extrabold mb-2">Transactions</h3>
       <p class="text-gray-600 dark:text-gray-400">
-        You has {{ transactionStore.inComeCount }} Incomes and {{ transactionStore.expenseCount }} expenses this
-        period
+        You has {{ transactionStore.inComeCount }} Incomes and
+        {{ transactionStore.expenseCount }} expenses this period
       </p>
     </UContainer>
   </section>

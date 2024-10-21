@@ -7,7 +7,7 @@ const supabase = createClient(
   process.env.SUPABASE_KEY,
   {
     auth: { persistSession: false },
-  }
+  },
 );
 const categories = ["Food", "Housing", "Car", "Entertainment"];
 
@@ -34,7 +34,7 @@ async function seedTransactions() {
       const date = new Date(
         year,
         faker.number.int({ min: 0, max: 11 }),
-        faker.number.int({ min: 1, max: 28 })
+        faker.number.int({ min: 1, max: 28 }),
       );
 
       let type, category;

@@ -59,7 +59,7 @@ const icon = computed(() => {
     ? "i-heroicons-arrow-trending-up"
     : "i-heroicons-arrow-trending-down";
 });
-const { currency} = useCurrency(props.amount)
+const { currency } = useCurrency(props.amount);
 const percentTrend = computed(() => {
   if (props.amount === 0 || props.lastAmount === 0) return "-";
 

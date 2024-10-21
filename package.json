@@ -8,7 +8,11 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "seed": "node .course\/seed.mjs"
+    "seed": "node .course/seed.mjs",
+    "test:unit": "vitest",
+    "type-check": "vue-tsc --build --force",
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@morev/vue-transitions": "^3.0.2",

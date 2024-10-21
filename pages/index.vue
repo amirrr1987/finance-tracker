@@ -16,5 +16,5 @@
 </template>
 <script setup lang="ts">
 import { transActionViewOptions } from "~/constants";
-const selectedView = ref(transActionViewOptions[1])
+const selectedView = ref(transActionViewOptions[1]);
 </script>

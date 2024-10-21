@@ -52,7 +52,7 @@
   </section>
 </template>
 <script setup lang="ts">
-import type { Transaction } from "~/types/transaction.model";
+import type { TransactionDTO } from "~/types/transaction.model";
 
 const toast = useToast();
 const transactionStore = useTransactionStore();
@@ -73,7 +73,7 @@ const transactionOnDelete = async (id: number) => {
 const isOpen = ref(false);
 const closeModal = () => {
   isOpen.value = false;
-  transactionStore.transaction = {} as Transaction;
+  transactionStore.transaction = {} as TransactionDTO.Content;
 };
 const submitForm = async () => {
   try {

@@ -33,6 +33,6 @@ const colorMode = useColorMode();
 }
 .sepia {
   background-color: #f3dfad;
-  color: #5B4636;
+  color: #5b4636;
 }
 </style>

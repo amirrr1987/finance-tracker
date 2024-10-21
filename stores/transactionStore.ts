@@ -99,7 +99,7 @@ export const useTransactionStore = defineStore("transaction", () => {
   const inComesTotal = computed(() => {
     return inComes.value.reduce(
       (sum: number, transaction: Transaction) => sum + transaction.amount,
-      0
+      0,
     );
   });
   const expenses = computed(() => {
@@ -109,7 +109,7 @@ export const useTransactionStore = defineStore("transaction", () => {
   const expenseTotal = computed(() => {
     return expenses.value.reduce(
       (sum: number, transaction: Transaction) => sum + transaction.amount,
-      0
+      0,
     );
   });
 

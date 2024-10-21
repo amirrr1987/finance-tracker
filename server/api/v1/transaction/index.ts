@@ -14,7 +14,7 @@ export default defineEventHandler(async () => {
   const { data, error } = await supabase
     .from("transactions")
     .select()
-    .order("createdAt", { ascending: false});
+    .order("createdAt", { ascending: false });
 
   if (error) {
     console.error("Error fetching transactions:", error);
