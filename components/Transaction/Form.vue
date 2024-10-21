@@ -15,30 +15,36 @@
       />
     </div>
     <UForm
+      ref="form"
       :schema="transactionSchemaOnCreate"
       :state="props.transaction"
       class="p-4 space-y-4"
-      @submit="emits('submit')"
+      @submit.prevent="emits('submit')"
       @reset="emits('close')"
     >
       <UFormGroup label="Amount" name="amount" required>
-        <UInput v-model.number="amountComputed" type="number" />
+        <USkeleton v-if="props.isFetching" class="h-8" />
+        <UInput v-else v-model.number="amountComputed" type="number" />
       </UFormGroup>
 
       <UFormGroup label="Description" name="description" required>
-        <UTextarea v-model="descriptionComputed" :rows="6" />
+        <USkeleton v-if="props.isFetching" class="h-32" />
+        <UTextarea v-else v-model="descriptionComputed" :rows="6" />
       </UFormGroup>
       <div class="grid grid-cols-2 gap-x-4">
         <UFormGroup label="Category" name="category" required>
-          <USelect v-model="categoryComputed" :options="categories" />
+          <USkeleton v-if="props.isFetching" class="h-8" />
+          <USelect v-else v-model="categoryComputed" :options="categories" />
         </UFormGroup>
         <UFormGroup label="Type" name="type" required>
-          <USelect v-model="typeComputed" :options="types" />
+          <USkeleton v-if="props.isFetching" class="h-8" />
+          <USelect v-else v-model="typeComputed" :options="types" />
         </UFormGroup>
       </div>
       <div class="space-x-4">
-        <UButton label="Submit" type="submit" :loading="isLoading" />
+        <UButton label="Submit" type="submit" :loading="props.isSubmitting" />
         <UButton label="Cancel" type="reset" variant="ghost" />
+        <UButton label="Reset" variant="ghost" @click="clearForm" />
       </div>
     </UForm>
   </UModal>
@@ -49,13 +55,20 @@ import type { Transaction } from "~/types/transaction.model";
 import { categories, types } from "~/constants";
 interface Props {
   transaction: Transaction;
-  isLoading: boolean;
+  isSubmitting: boolean;
+  isFetching: boolean;
 }
 const props = withDefaults(defineProps<Props>(), {
   transaction: () => ({}) as Transaction,
-  isLoading: false,
+  isSubmitting: false,
+  isFetching: false,
 });
+const form = ref();
 
+const clearForm = () => {
+  form.value.clear();
+  emits("update:transaction", {});
+};
 const emits = defineEmits(["submit", "close", "update:transaction"]);
 
 const ui = {
