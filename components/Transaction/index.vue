@@ -1,17 +1,13 @@
 <template>
-  <div
-    class="grid grid-cols-[1fr,max-content,max-content,max-content] items-center"
-  >
+  <div class="flex items-center gap-x-2">
     <div class="flex-1 flex gap-x-4 items-center">
       <UIcon :name="icon" :class="iconColor" />
       <h3>{{ props.transaction.description }}</h3>
     </div>
-    <div class="w-40">
-      <UBadge variant="subtle" class="me-4">
-        {{ props.transaction.category }}
-      </UBadge>
-    </div>
-    <div class="">{{ currency }}</div>
+    <UBadge variant="subtle">
+      {{ props.transaction.category }}
+    </UBadge>
+    <div>{{ currency }}</div>
     <ClientOnly>
       <UDropdown :items="dropdownItems" :popper="{ placement: 'bottom-start' }">
         <UButton
@@ -27,10 +23,10 @@
   <UDivider />
 </template>
 <script setup lang="ts">
-import type { Transaction } from "~/types/transaction.model";
+import type { TransactionDTO } from "~/types/transaction.model";
 
 interface Props {
-  transaction: Transaction;
+  transaction: TransactionDTO.Content;
   isLoading: boolean;
 }
 
