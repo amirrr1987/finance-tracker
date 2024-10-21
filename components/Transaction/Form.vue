@@ -25,12 +25,12 @@
     >
       <UFormGroup label="Amount" name="amount" required>
         <USkeleton v-if="props.isFetching" class="h-8" />
-        <UInput v-else v-model.number="amountComputed" type="number" />
+        <UInput v-else v-model.number="amountComputed" type="number" placeholder="Enter amount" />
       </UFormGroup>
 
       <UFormGroup label="Description" name="description" required>
         <USkeleton v-if="props.isFetching" class="h-32" />
-        <UTextarea v-else v-model="descriptionComputed" :rows="6" />
+        <UTextarea v-else v-model="descriptionComputed" :rows="6" placeholder="Enter a description" />
       </UFormGroup>
       <UFormGroup label="Created at" name="createdAt" required>
         <USkeleton v-if="props.isFetching" class="h-8" />
@@ -39,11 +39,11 @@
       <div class="grid grid-cols-2 gap-x-4">
         <UFormGroup label="Category" name="category" required>
           <USkeleton v-if="props.isFetching" class="h-8" />
-          <USelect v-else v-model="categoryComputed" :options="categories" />
+          <USelect v-else v-model="categoryComputed" :options="categories" placeholder="Select category" />
         </UFormGroup>
         <UFormGroup label="Type" name="type" required>
           <USkeleton v-if="props.isFetching" class="h-8" />
-          <USelect v-else v-model="typeComputed" :options="types" />
+          <USelect v-else v-model="typeComputed" :options="types" placeholder="Select type" />
         </UFormGroup>
       </div>
       <div class="space-x-4">
