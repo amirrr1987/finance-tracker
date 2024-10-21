@@ -1,10 +1,11 @@
 <template>
   <UModal :ui="ui" prevent-close appear>
-    <div class="flex items-center justify-between">
+    <div class="flex items-center justify-between px-4 pt-2">
       <h3
         class="text-base font-semibold leading-6 text-gray-900 dark:text-white"
       >
-        {{ props.transaction.description }}
+        <template v-if="props.transaction.id"> Edit </template>
+        <template v-else> Create </template>
       </h3>
       <UButton
         color="gray"
@@ -30,6 +31,10 @@
       <UFormGroup label="Description" name="description" required>
         <USkeleton v-if="props.isFetching" class="h-32" />
         <UTextarea v-else v-model="descriptionComputed" :rows="6" />
+      </UFormGroup>
+      <UFormGroup label="Created at" name="createdAt" required>
+        <USkeleton v-if="props.isFetching" class="h-8" />
+        <UInput v-else v-model="createdAtComputed" type="date" />
       </UFormGroup>
       <div class="grid grid-cols-2 gap-x-4">
         <UFormGroup label="Category" name="category" required>
@@ -90,6 +95,16 @@ const descriptionComputed = computed({
     return emits("update:transaction", {
       ...props.transaction,
       description: event,
+    });
+  },
+});
+
+const createdAtComputed = computed({
+  get: () => props.transaction.createdAt,
+  set: (event) => {
+    return emits("update:transaction", {
+      ...props.transaction,
+      createdAt: event,
     });
   },
 });
