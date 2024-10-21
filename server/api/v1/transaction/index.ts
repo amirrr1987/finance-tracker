@@ -11,7 +11,10 @@ export default defineEventHandler(async () => {
 
   const supabase = createClient(supabaseUrl, supabaseKey);
 
-  const { data, error } = await supabase.from("transactions").select();
+  const { data, error } = await supabase
+    .from("transactions")
+    .select()
+    .order("createdAt", { ascending: false});
 
   if (error) {
     console.error("Error fetching transactions:", error);
