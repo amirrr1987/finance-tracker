@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import type { Transaction } from "~/types/transaction.model";
+import type { TransactionDTO } from "~/types/transaction.model";
 import _ from "lodash";
 export default defineEventHandler(async (event) => {
   const supabaseUrl = process.env.SUPABASE_URL;
@@ -11,8 +11,8 @@ export default defineEventHandler(async (event) => {
 
   const supabase = createClient(supabaseUrl, supabaseKey);
 
-  const body: Transaction = await readBody(event);
- const obj = _.omit(body, ["id", "createdAt"]);
+  const body: TransactionDTO.CreateOne.Request = await readBody(event);
+  const obj = _.omit(body, ["id"]);
   const { data, error } = await supabase
     .from("transactions")
     .insert(obj)
@@ -23,5 +23,5 @@ export default defineEventHandler(async (event) => {
     return { error } as unknown;
   }
 
-  return data as unknown as Transaction;
+  return data as unknown as TransactionDTO.Content;
 });
