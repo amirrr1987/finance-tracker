@@ -6,9 +6,11 @@
       <UIcon :name="icon" :class="iconColor" />
       <h3>{{ props.transaction.description }}</h3>
     </div>
-    <UBadge variant="subtle" class="me-4">
-      {{ props.transaction.category }}
-    </UBadge>
+    <div class="w-40">
+      <UBadge variant="subtle" class="me-4">
+        {{ props.transaction.category }}
+      </UBadge>
+    </div>
     <div class="">{{ currency }}</div>
     <ClientOnly>
       <UDropdown :items="dropdownItems" :popper="{ placement: 'bottom-start' }">
