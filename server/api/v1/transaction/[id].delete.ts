@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import type { Transaction } from "~/types/transaction.model";
+import type { TransactionDTO } from "~/types/transaction.model";
 
 export default defineEventHandler(async (event) => {
   const supabaseUrl = process.env.SUPABASE_URL;
@@ -15,9 +15,9 @@ export default defineEventHandler(async (event) => {
       .from("transactions")
       .delete()
       .eq("id", event.context.params?.id);
-    return data as unknown as Transaction;
+    return data as unknown as TransactionDTO.Content;
   } catch (error) {
     console.error("Error fetching transactions:", error);
-    return [] as unknown as Transaction;
+    return [] as unknown as TransactionDTO.Content;
   }
 });
