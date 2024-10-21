@@ -1,8 +1,8 @@
 import { defineStore } from "pinia";
-import type { Transaction } from "~/types/transaction.model";
+import type { TransactionDTO } from "~/types/transaction.model";
 export const useTransactionStore = defineStore("transaction", () => {
-  const transactions = ref<Transaction[]>([]);
-  const transaction = ref<Transaction>({} as Transaction);
+  const transactions = ref<TransactionDTO.Content[]>([]);
+  const transaction = ref<TransactionDTO.Content>({} as TransactionDTO.Content);
   const isLoading = ref({
     getAll: false,
     createOne: false,
@@ -14,7 +14,9 @@ export const useTransactionStore = defineStore("transaction", () => {
   const getAll = async () => {
     isLoading.value.getAll = true;
     try {
-      const data = await $fetch<Transaction[]>("/api/v1/transaction");
+      const data = await $fetch<TransactionDTO.Content[]>(
+        "/api/v1/transaction"
+      );
       transactions.value = [];
       transactions.value = data;
     } catch (error) {
@@ -38,10 +40,13 @@ export const useTransactionStore = defineStore("transaction", () => {
   const getOneById = async (id: number) => {
     isLoading.value.getOneById = true;
     try {
-      const data = await $fetch<Transaction>(`/api/v1/transaction/${id}`, {
-        method: "get",
-      });
-      transaction.value = data as Transaction;
+      const data = await $fetch<TransactionDTO.Content>(
+        `/api/v1/transaction/${id}`,
+        {
+          method: "get",
+        }
+      );
+      transaction.value = data as TransactionDTO.Content;
     } catch (error) {
       console.log((error as Error).message);
     } finally {
@@ -54,7 +59,7 @@ export const useTransactionStore = defineStore("transaction", () => {
     try {
       await $fetch("/api/v1/transaction/create", {
         method: "POST",
-        body: transaction.value as Transaction,
+        body: transaction.value as TransactionDTO.Content,
       });
     } catch (error) {
       console.log((error as Error).message);
@@ -66,10 +71,13 @@ export const useTransactionStore = defineStore("transaction", () => {
     isLoading.value.editOne = true;
     console.log("🚀 ~ editOne ~ transaction.value:", transaction.value);
     try {
-      await $fetch<Transaction>(`/api/v1/transaction/${transaction.value.id}`, {
-        method: "PUT",
-        body: transaction.value,
-      });
+      await $fetch<TransactionDTO.Content>(
+        `/api/v1/transaction/${transaction.value.id}`,
+        {
+          method: "PUT",
+          body: transaction.value,
+        }
+      );
     } catch (error) {
       console.log((error as Error).message);
     } finally {
@@ -77,7 +85,7 @@ export const useTransactionStore = defineStore("transaction", () => {
     }
   };
   interface Grouped {
-    [key: string]: Transaction[];
+    [key: string]: TransactionDTO.Content[];
   }
   const { $dateConvertor } = useNuxtApp();
   const transactionsGroupByDate = computed(() => {
@@ -98,18 +106,22 @@ export const useTransactionStore = defineStore("transaction", () => {
   const inComeCount = computed(() => inComes.value.length);
   const inComesTotal = computed(() => {
     return inComes.value.reduce(
-      (sum: number, transaction: Transaction) => sum + transaction.amount,
-      0,
+      (sum: number, transaction: TransactionDTO.Content) =>
+        sum + transaction.amount,
+      0
     );
   });
   const expenses = computed(() => {
-    return transactions.value.filter((i: Transaction) => i.type === "Expense");
+    return transactions.value.filter(
+      (i: TransactionDTO.Content) => i.type === "Expense"
+    );
   });
   const expenseCount = computed(() => expenses.value.length);
   const expenseTotal = computed(() => {
     return expenses.value.reduce(
-      (sum: number, transaction: Transaction) => sum + transaction.amount,
-      0,
+      (sum: number, transaction: TransactionDTO.Content) =>
+        sum + transaction.amount,
+      0
     );
   });
 

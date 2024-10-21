@@ -24,7 +24,7 @@
 </template>
 <script setup lang="ts">
 import type { TransactionDTO } from "~/types/transaction.model";
-import _  from "lodash";
+import _ from "lodash";
 
 interface Props {
   transaction: TransactionDTO.Content;
