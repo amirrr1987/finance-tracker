@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import _ from "lodash";
-import type { Transaction } from "~/types/transaction.model";
+import type { TransactionDTO } from "~/types/transaction.model";
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
@@ -29,7 +29,7 @@ export default defineEventHandler(async (event) => {
     .eq("id", id);
   if (error) {
     console.error("Error fetching transactions:", error);
-    return {} as Transaction;
+    return {} as TransactionDTO.Content;
   }
 
   return data;
