@@ -1,26 +1,26 @@
 <template>
-  <div class="flex justify-between">
-    <div class="flex gap-x-4 items-center">
+  <div
+    class="grid grid-cols-[1fr,max-content,max-content,max-content] items-center"
+  >
+    <div class="flex-1 flex gap-x-4 items-center">
       <UIcon :name="icon" :class="iconColor" />
       <h3>{{ props.transaction.description }}</h3>
     </div>
-    <div class="flex items-center">
-      <div>{{ currency }}</div>
-      <ClientOnly>
-        <UDropdown
-          :items="dropdownItems"
-          :popper="{ placement: 'bottom-start' }"
-        >
-          <UButton
-            trailing-icon="i-heroicons-ellipsis-horizontal"
-            variant="link"
-            :loading="
-              selectedTransactionId === transaction.id ? props.isLoading : false
-            "
-          />
-        </UDropdown>
-      </ClientOnly>
-    </div>
+    <UBadge variant="subtle" class="me-4">
+      {{ props.transaction.category }}
+    </UBadge>
+    <div class="">{{ currency }}</div>
+    <ClientOnly>
+      <UDropdown :items="dropdownItems" :popper="{ placement: 'bottom-start' }">
+        <UButton
+          trailing-icon="i-heroicons-ellipsis-horizontal"
+          variant="link"
+          :loading="
+            selectedTransactionId === transaction.id ? props.isLoading : false
+          "
+        />
+      </UDropdown>
+    </ClientOnly>
   </div>
   <UDivider />
 </template>
