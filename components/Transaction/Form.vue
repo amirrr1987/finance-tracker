@@ -17,7 +17,7 @@
     </div>
     <UForm
       ref="form"
-      :schema="transactionSchemaOnCreate"
+      :schema="schemaCreateOne"
       :state="props.transaction"
       class="p-4 space-y-4"
       @submit.prevent="emits('submit')"
@@ -55,16 +55,16 @@
   </UModal>
 </template>
 <script setup lang="ts">
-import { transactionSchemaOnCreate } from "~/schema/transaction.schema";
-import type { Transaction } from "~/types/transaction.model";
+import { schemaCreateOne } from "~/schema/transaction.schema";
+import type { TransactionDTO } from "~/types/transaction.model";
 import { categories, types } from "~/constants";
 interface Props {
-  transaction: Transaction;
+  transaction: TransactionDTO.Content;
   isSubmitting: boolean;
   isFetching: boolean;
 }
 const props = withDefaults(defineProps<Props>(), {
-  transaction: () => ({}) as Transaction,
+  transaction: () => ({}) as TransactionDTO.Content,
   isSubmitting: false,
   isFetching: false,
 });
