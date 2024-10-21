@@ -2,7 +2,7 @@
   <div class="flex items-center gap-x-2">
     <div class="flex-1 flex gap-x-4 items-center">
       <UIcon :name="icon" :class="iconColor" />
-      <h3>{{ props.transaction.description }}</h3>
+      <h3>{{ truncate(props.transaction.description, { length: 50 }) }}</h3>
     </div>
     <UBadge variant="subtle">
       {{ props.transaction.category }}
@@ -24,6 +24,7 @@
 </template>
 <script setup lang="ts">
 import type { TransactionDTO } from "~/types/transaction.model";
+import { truncate } from "lodash";
 
 interface Props {
   transaction: TransactionDTO.Content;
