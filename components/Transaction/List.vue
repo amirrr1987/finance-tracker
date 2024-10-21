@@ -4,10 +4,11 @@
       <TransactionForm
         v-model="isOpen"
         v-model:transaction="transactionStore.transaction"
-        :is-loading="
+        :is-submitting="
           transactionStore.isLoading.createOne ||
           transactionStore.isLoading.editOne
         "
+        :is-fetching="transactionStore.isLoading.getOneById"
         @submit="submitForm"
         @close="closeModal"
       />
