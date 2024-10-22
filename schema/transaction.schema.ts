@@ -8,8 +8,24 @@ export const schema = z.object({
   id: z.number(),
   createdAt: z.string(),
 });
-export const schemaCreateOne = schema.omit({ id: true });
-export const schemaUpdateOne = schema;
-export const schemaGetOne = schema.pick({ id: true });
-export const schemaGetAll = z.array(schema);
-export const schemaDeleteById = schema.pick({ id: true });
+
+export const transactionSchema = {
+  content: schema,
+  createOne: {
+    request: schema.omit({ id: true }),
+  },
+  getAll: {
+    response: z.array(schema),
+  },
+  getOneById: {
+    request: schema.pick({ id: true }),
+    response: schema,
+  },
+  updateOneById: {
+    request: schema,
+    response: schema,
+  },
+  deleteOneById: {
+    request: schema.pick({ id: true }),
+  },
+};

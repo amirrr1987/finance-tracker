@@ -10,10 +10,10 @@
   <UDivider class="mb-4 mt-2" />
 </template>
 <script setup lang="ts">
-import type { Transaction } from "~/types/transaction.model";
+import type { TransactionDTO } from "~/types/transaction.model";
 
 interface Props {
-  transactions: Transaction[];
+  transactions: TransactionDTO.GetAll.Response;
   date: string | number;
 }
 const props = withDefaults(defineProps<Props>(), {});

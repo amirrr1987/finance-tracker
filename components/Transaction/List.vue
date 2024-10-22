@@ -1,14 +1,14 @@
 <template>
   <section class="py-4 md:py-6 lg:py-8">
     <UContainer class="">
+      {{ transactionStore.getOneById.loading.loading }}
+      {{ transactionStore.updateOneById.loading.loading }}
+      {{ transactionStore.createOne.loading.loading }}
       <TransactionForm
         v-model="isOpen"
         v-model:transaction="transactionStore.transaction"
-        :is-submitting="
-          transactionStore.isLoading.createOne ||
-          transactionStore.isLoading.editOne
-        "
-        :is-fetching="transactionStore.isLoading.getOneById"
+        :is-submitting="transactionStore.updateOneById.loading.loading"
+        :is-fetching="transactionStore.getOneById.loading.loading"
         @submit="submitForm"
         @close="closeModal"
       />
@@ -17,7 +17,7 @@
   </section>
   <section class="py-4 md:py-6 lg:py-8">
     <UContainer>
-      <template v-if="transactionStore.isLoading.getAll">
+      <template v-if="transactionStore.getAll.loading.loading">
         <USkeleton
           v-for="skeleton in 4"
           :key="skeleton"
@@ -41,7 +41,7 @@
               v-for="transaction in transactionsByDate"
               :key="transaction.id"
               :transaction="transaction"
-              :is-loading="transactionStore.isLoading.deleteOneById"
+              :is-loading="transactionStore.deleteOneById.loading.loading"
               @edit="transactionOnEdit"
               @delete="transactionOnDelete"
             />
@@ -54,48 +54,52 @@
 <script setup lang="ts">
 import type { TransactionDTO } from "~/types/transaction.model";
 
-const toast = useToast();
 const transactionStore = useTransactionStore();
-await transactionStore.getAll();
-
-const transactionOnEdit = async (id: number) => {
-  isOpen.value = true;
-  await transactionStore.getOneById(id);
-};
-const transactionOnDelete = async (id: number) => {
-  await transactionStore.deleteOneById(id);
-  toast.add({
-    title: "Transaction is deleted",
-    description: `Transaction width id:${id} is deleted`,
-  });
-  await transactionStore.getAll();
-};
+await transactionStore.getAll.fetch();
+const toast = useToast();
 const isOpen = ref(false);
 const closeModal = () => {
   isOpen.value = false;
   transactionStore.transaction = {} as TransactionDTO.Content;
 };
-const submitForm = async () => {
-  try {
-    if (transactionStore.transaction.id) {
-      await transactionStore.editOne();
-      toast.add({
-        title: "Transaction is updated",
-        description: `Transaction width id:${transactionStore.transaction.id} is updated`,
-      });
-    } else {
-      await transactionStore.createOne();
-      toast.add({
-        title: "Transaction is created",
-        description: `Transaction  is created`,
-      });
-    }
-  } catch (error) {
-    console.log((error as Error).message);
-  } finally {
-    closeModal();
 
-    await transactionStore.getAll();
-  }
+const submitForm = async () => {
+  await transactionStore.updateOneById.validate(1)
+  await transactionStore.updateOneById.fetch()
+  // try {
+  //   if (transactionStore.transaction.id) {
+  //     await transactionStore.updateOneById.fetch();
+  //     toast.add({
+  //       title: "Transaction is updated",
+  //       description: `Transaction width id:${transactionStore.transaction.id} is updated`,
+  //     });
+  //   } else {
+  //     await transactionStore.createOne.fetch();
+  //     toast.add({
+  //       title: "Transaction is created",
+  //       description: `Transaction  is created`,
+  //     });
+  //   }
+  // } catch (error) {
+  //   console.log((error as Error).message);
+  // } finally {
+  //   closeModal();
+
+  //   await transactionStore.getAll.fetch();
+  // }
+};
+
+const transactionOnEdit = async (id: number) => {
+  isOpen.value = true;
+  await transactionStore.getOneById.fetch(id);
+};
+
+const transactionOnDelete = async (id: number) => {
+  await transactionStore.deleteOneById.fetch(id);
+  toast.add({
+    title: "Transaction is deleted",
+    description: `Transaction width id:${id} is deleted`,
+  });
+  await transactionStore.getAll.fetch();
 };
 </script>

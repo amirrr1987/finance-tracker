@@ -10,28 +10,28 @@
         title="Income"
         :amount="transactionStore.inComesTotal"
         :last-amount="400"
-        :loading="transactionStore.isLoading.getAll"
+        :loading="transactionStore.getAll.loading.loading"
       />
       <Trend
         color="red"
         title="Expense"
         :amount="transactionStore.expenseTotal"
         :last-amount="1"
-        :loading="transactionStore.isLoading.getAll"
+        :loading="transactionStore.getAll.loading.loading"
       />
       <Trend
         color="green"
         title="Income"
         :amount="transactionStore.inComesTotal"
         :last-amount="3000"
-        :loading="transactionStore.isLoading.getAll"
+        :loading="transactionStore.getAll.loading.loading"
       />
       <Trend
         color="green"
         title="Income"
         :amount="transactionStore.expenseTotal"
         :last-amount="3000"
-        :loading="transactionStore.isLoading.getAll"
+        :loading="transactionStore.getAll.loading.loading"
       />
     </UContainer>
   </section>

@@ -1,16 +1,20 @@
 <template>
-  <NuxtRouteAnnouncer />
-  {{ transactions.transactionList }}
+  <!-- <NuxtRouteAnnouncer />
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
-  <UNotifications />
+ -->
+  <div>
+    {{ amir.transaction }}
+    <UNotifications />
+  </div>
 </template>
 <script setup lang="ts">
-const transactions =  useTransactions();
-await transactions.getAll();
-console.log(1111111111);
-console.log(transactions.transactionList.value);
+const amir = useAmirStore();
+amir.transaction = {
+  amount: "sdf",
+  createdAt: `${new Date()}`,
+};
 
-console.log(1111111111);
+await amir.createOne.fetch();
 </script>

@@ -15,9 +15,14 @@
         @click="emits('close')"
       />
     </div>
+
     <UForm
       ref="form"
-      :schema="schemaCreateOne"
+      :schema="
+        props.transaction.id
+          ? transactionSchema.updateOneById.request
+          : transactionSchema.createOne.request
+      "
       :state="props.transaction"
       class="p-4 space-y-4"
       @submit.prevent="emits('submit')"
@@ -75,7 +80,7 @@
   </UModal>
 </template>
 <script setup lang="ts">
-import { schemaCreateOne } from "~/schema/transaction.schema";
+import { transactionSchema } from "~/schema/transaction.schema";
 import type { TransactionDTO } from "~/types/transaction.model";
 import { categories, types } from "~/constants";
 interface Props {
