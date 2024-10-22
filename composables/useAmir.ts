@@ -10,7 +10,7 @@ export const useAmir = () => {
     loader: loader,
     success: ref<boolean>(false),
     error: ref<string>(),
-    status: ref<"loading" | "success" | "error">(),
+    status: ref<string>(),
 
     fetch: async () => {
       createOne.loader.start();
