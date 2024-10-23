@@ -27,7 +27,7 @@ export const useFetcher = async <DataT, ErrorT>(
   }
 
   return {
-    data,
+    data: data.value,
     error,
     execute: async () => await execute.value(),
     refresh: async () => await refresh.value(),

@@ -10,7 +10,7 @@
         />
       </UContainer>
     </section>
-    <TrendList />
+    <!-- <TrendList /> -->
     <TransactionList />
   </div>
 </template>

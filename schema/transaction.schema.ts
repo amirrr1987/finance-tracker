@@ -8,7 +8,6 @@ export const schema = z.object({
   id: z.number(),
   createdAt: z.string(),
 });
-
 export const transactionSchema = {
   content: schema,
   createOne: {
@@ -18,7 +17,7 @@ export const transactionSchema = {
     response: z.array(schema),
   },
   getOneById: {
-    request: schema.pick({ id: true }),
+    request: schema.shape.id,
     response: schema,
   },
   updateOneById: {
@@ -26,6 +25,6 @@ export const transactionSchema = {
     response: schema,
   },
   deleteOneById: {
-    request: schema.pick({ id: true }),
+    request: schema.shape.id,
   },
 };
