@@ -8,15 +8,15 @@
           : 'text-red-600 dark:text-red-400'
       "
     >
-      {{ props.title }}
+      {{ title }}
     </div>
     <div class="text-2xl font-extrabold text-back dark:text-white mb-2">
-      <USkeleton v-if="props.loading" class="h-8 w-full" />
+      <USkeleton v-if="loading" class="h-8 w-full" />
       <div v-else>{{ currency }}</div>
     </div>
 
     <div>
-      <USkeleton v-if="props.loading" class="h-6 w-full" />
+      <USkeleton v-if="loading" class="h-6 w-full" />
       <div v-else class="flex space-x-1 items-center text-sm">
         <UIcon
           :name="icon"
@@ -49,9 +49,10 @@ const props = withDefaults(defineProps<Props>(), {
   color: "",
   loading: false,
 });
+const { amount, lastAmount, loading, color, title } = toRefs(props);
 
 const trendingUp = computed(() => {
-  return props.amount >= props.lastAmount;
+  return amount.value >= lastAmount.value ? true : false;
 });
 
 const icon = computed(() => {
@@ -59,12 +60,12 @@ const icon = computed(() => {
     ? "i-heroicons-arrow-trending-up"
     : "i-heroicons-arrow-trending-down";
 });
-const { currency } = useCurrency(props.amount);
+const { currency } = useCurrency(amount);
 const percentTrend = computed(() => {
-  if (props.amount === 0 || props.lastAmount === 0) return "-";
+  if (amount.value === 0 || lastAmount.value === 0) return "-";
 
-  const bigger = Math.max(props.amount, props.lastAmount);
-  const lower = Math.min(props.amount, props.lastAmount);
+  const bigger = Math.max(amount.value, lastAmount.value);
+  const lower = Math.min(amount.value, lastAmount.value);
   const ratio = (bigger - lower) / 100;
   return Math.ceil(ratio);
 });
