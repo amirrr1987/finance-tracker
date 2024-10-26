@@ -9,7 +9,7 @@
         @close="isOpen = false"
         @submit="submitTransaction"
       />
-      <div class="mb-4 flex gap-4">
+      <div class="flex gap-4">
         <UButton
           label="Add"
           icon="i-heroicons-plus"
