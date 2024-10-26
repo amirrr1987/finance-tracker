@@ -10,7 +10,12 @@
         @submit="submitTransaction"
       />
       <div class="mb-4 flex gap-4">
-        <UButton @click="transactions.getAll">execute</UButton>
+        <UButton
+          label="Add"
+          icon="i-heroicons-plus"
+          variant="soft"
+          @click="isOpen = true"
+        />
       </div>
       <template v-if="transactions.status.value.getAll === 'pending'">
         <USkeleton v-for="item in 4" :key="item" class="h-12 mb-4" />
