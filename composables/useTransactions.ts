@@ -15,62 +15,146 @@ export const useTransactions = () => {
     getOneById: "idle",
     updateOneById: "idle",
   } as Status);
-  const getAll = async () => {
-    const result = useFetch<TransactionDTO.Content[]>("/api/v1/transaction");
+
+  const create = async () => {
+    status.value.updateOneById = "pending";
+
     try {
-      status.value.getAll = "pending";
-      await result.execute();
-      transactionList.value = result.data.value ?? [];
-    } catch (error) {
-      console.log(error);
-      status.value.getAll = "error";
-    } finally {
-      status.value.getAll = "success";
-    }
-  };
-  const getOneById = async (id: TransactionDTO.Content["id"]) => {
-    const result = useFetch<TransactionDTO.Content>(
-      `/api/v1/transaction/${id}`
-    );
-    try {
-      status.value.getOneById = "pending";
-      await result.execute();
-      transaction.value = result.data.value ?? ({} as TransactionDTO.Content);
-    } catch (error) {
-      console.log(error);
-      status.value.getOneById = "error";
-    } finally {
-      status.value.getOneById = "success";
-    }
-  };
-  const updateOneById = async (transaction: TransactionDTO.Content) => {
-    const result = useFetch(`/api/v1/transaction/${transaction.id}`, {
-      method: "put",
-      body: transaction,
-    });
-    try {
-      status.value.updateOneById = "pending";
-      await result.execute();
+      const { error } = await useAsyncData("create-transaction", async () => {
+        const result = await useFetch(`/api/v1/transaction/create`, {
+          method: "POST",
+          body: transaction.value,
+        });
+
+        return result.data.value;
+      });
+
+      if (error.value) {
+        throw new Error(error.value.message);
+      }
+
+      status.value.updateOneById = "success";
     } catch (error) {
       console.log(error);
       status.value.updateOneById = "error";
-    } finally {
-      status.value.updateOneById = "success";
     }
   };
-  const deleteOneById = async (id: TransactionDTO.Content["id"]) => {
-    const result = useFetch(`/api/v1/transaction/${id}`, {
-      method: "delete",
-    });
+
+  const getAll = async () => {
+    status.value.getAll = "pending";
+
     try {
-      status.value.deleteOneById = "pending";
-      await result.execute();
+      const { data, error } = await useAsyncData(
+        "transactions-all",
+        async () => {
+          const result = await useFetch<TransactionDTO.Content[]>(
+            "/api/v1/transaction"
+          );
+          return result.data.value;
+        }
+      );
+
+      if (error.value) {
+        throw new Error(error.value.message);
+      }
+
+      transactionList.value = data.value ?? [];
+      status.value.getAll = "success";
+    } catch (error) {
+      console.log(error);
+      status.value.getAll = "error";
+    }
+  };
+
+  const getOneById = async () => {
+    status.value.getOneById = "pending";
+
+    try {
+      const { error, data } = await useAsyncData(
+        `transaction-${transaction.value.id}`,
+        async () => {
+          const result = await useFetch<TransactionDTO.Content>(
+            `/api/v1/transaction/${transaction.value.id}`
+          );
+
+          if (result.error.value) {
+            throw new Error(result.error.value.message);
+          }
+
+          return result.data.value;
+        }
+      );
+
+      if (error.value) {
+        throw new Error(error.value.message);
+      }
+
+      transaction.value = data.value ?? ({} as TransactionDTO.Content);
+      status.value.getOneById = "success";
+    } catch (error) {
+      console.log(error);
+      status.value.getOneById = "error";
+    }
+  };
+
+  const updateOneById = async () => {
+    status.value.updateOneById = "pending";
+
+    try {
+      const { error } = await useAsyncData(
+        `transaction-update-${transaction.value.id}`,
+        async () => {
+          const result = await useFetch(
+            `/api/v1/transaction/${transaction.value.id}`,
+            {
+              method: "PUT",
+              body: transaction.value,
+            }
+          );
+
+          if (result.error.value) {
+            throw new Error(result.error.value.message);
+          }
+        }
+      );
+
+      if (error.value) {
+        throw new Error(error.value.message);
+      }
+
+      status.value.updateOneById = "success";
+    } catch (error) {
+      console.log(error);
+      status.value.updateOneById = "error";
+    }
+  };
+
+  const deleteOneById = async () => {
+    status.value.deleteOneById = "pending";
+
+    try {
+      const { error } = await useAsyncData(
+        `transaction-${transaction.value.id}`,
+        () =>
+          useFetch(`/api/v1/transaction/${transaction.value.id}`, {
+            method: "delete",
+          })
+      );
+
+      if (error.value) {
+        throw new Error(error.value.message);
+      }
+
+      status.value.deleteOneById = "success";
     } catch (error) {
       console.log(error);
       status.value.deleteOneById = "error";
-    } finally {
-      status.value.deleteOneById = "success";
     }
+  };
+
+  const findAndSetTransactionById = (id: TransactionDTO.Content["id"]) => {
+    const index = transactionList.value.findIndex((item) => item.id === id);
+    transaction.value = transactionList.value[index];
   };
 
   interface Grouped {
@@ -109,16 +193,40 @@ export const useTransactions = () => {
   const expenseTotal = computed(() => {
     return expenses.value.reduce(
       (sum: number, transaction: TransactionDTO.Content) =>
-        sum + transaction.amount,
+        sum - transaction.amount,
       0
     );
   });
 
   return {
+    transactions: {
+      one: transaction,
+      all: transactionList,
+      grouped: {
+        byDate: transactionListGroupByDate,
+      },
+    },
+    inCome: {
+      total: inComesTotal,
+      count: inComeCount,
+    },
+    expense: {
+      total: expenseTotal,
+      count: expenseCount,
+    },
+    crud: {
+      getAll,
+      getOneById,
+      updateOneById,
+      deleteOneById,
+      create,
+    },
+    findAndSetTransactionById,
     transaction,
     transactionList,
     status,
     getAll,
+    create,
     getOneById,
     updateOneById,
     deleteOneById,
