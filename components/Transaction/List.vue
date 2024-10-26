@@ -1,4 +1,17 @@
 <template>
+  <TrendList
+    :expense-count="transactions.expenseCount.value"
+    :expense-total="transactions.expenseTotal.value"
+    :in-come-count="transactions.inComeCount.value"
+    :in-comes-total="transactions.inComesTotal.value"
+    :is-loading="transactions.status.value.getAll === 'pending'"
+  />
+
+  <section>
+    <UContainer>
+      <!-- {{ transactions.transactions.all.value }} -->
+    </UContainer>
+  </section>
   <section class="">
     <UContainer>
       <TransactionForm
@@ -55,17 +68,24 @@ await transactions.getAll();
 
 const isOpen = ref(false);
 const editTransaction = async (id: TransactionDTO.Content["id"]) => {
+  transactions.findAndSetTransactionById(id);
   isOpen.value = true;
-  await transactions.getOneById(id);
+  await transactions.getOneById();
 };
 const deleteTransaction = async (id: TransactionDTO.Content["id"]) => {
-  await transactions.deleteOneById(id);
+  transactions.findAndSetTransactionById(id);
+  await transactions.deleteOneById();
   await transactions.getAll();
 };
 
 const submitTransaction = async () => {
-  await transactions.updateOneById(transactions.transaction.value);
+  if (transactions.transaction.value.id) {
+    await transactions.updateOneById();
+  } else {
+    await transactions.create();
+  }
   isOpen.value = false;
+  transactions.transaction.value = {} as TransactionDTO.Content;
   await transactions.getAll();
 };
 </script>
