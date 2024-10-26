@@ -10,11 +10,11 @@
         />
       </UContainer>
     </section>
-    <!-- <TrendList /> -->
     <TransactionList />
   </div>
 </template>
 <script setup lang="ts">
 import { transActionViewOptions } from "~/constants";
 const selectedView = ref(transActionViewOptions[1]);
+const x = useSelectedTime(selectedView)
 </script>
