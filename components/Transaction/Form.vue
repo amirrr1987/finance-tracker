@@ -78,7 +78,6 @@
           :loading="props.isSubmitting === 'pending'"
         />
         <UButton label="Cancel" type="reset" variant="ghost" />
-        <UButton label="Reset" variant="ghost" @click="clearForm" />
       </div>
     </UForm>
   </UModal>
