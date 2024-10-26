@@ -26,7 +26,7 @@
       :state="props.transaction"
       class="p-4 space-y-4"
       @submit.prevent="emits('submit')"
-      @reset="emits('close')"
+      @reset="clearForm"
     >
       <UFormGroup label="Amount" name="amount" required>
         <USkeleton v-if="props.isFetching === 'pending'" class="h-8" />
@@ -103,6 +103,7 @@ const form = ref();
 const clearForm = () => {
   form.value.clear();
   emits("update:transaction", {});
+  emits("close");
 };
 const emits = defineEmits(["submit", "close", "update:transaction"]);
 
