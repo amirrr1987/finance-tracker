@@ -1,25 +1,12 @@
-// useFetchError.ts
-// export const useFetchError = () => {
-//   const handleFetchError = (error: unknown) => {
-//     const temp = isRef(error) ? error.value : error;
-//     if (temp instanceof Error) {
-//       return temp.message;
-//     } else {
-//       return "An unknown error occurred.";
-//     }
-//   };
-
-//   return handleFetchError;
-// };
 export const useFetchError = () => {
-  const handleFetchError = (error: unknown) => {
+  const handleError = (error: unknown) => {
     if (!error) return;
-    const temp = isRef(error) ? error.value : error;
-    if (temp instanceof Error) {
-      return temp.message;
+    const err = isRef(error) ? error.value : error;
+    if (err instanceof Error) {
+      return err.message;
     }
     return "An unknown error occurred.";
   };
 
-  return handleFetchError;
+  return handleError;
 };

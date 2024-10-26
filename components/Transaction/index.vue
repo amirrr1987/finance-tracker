@@ -13,9 +13,7 @@
         <UButton
           trailing-icon="i-heroicons-ellipsis-horizontal"
           variant="link"
-          :loading="
-            selectedTransactionId === transaction.id ? props.isLoading : false
-          "
+          :loading="isLoading"
         />
       </UDropdown>
     </ClientOnly>
@@ -25,10 +23,11 @@
 <script setup lang="ts">
 import type { TransactionDTO } from "~/types/transaction.model";
 import _ from "lodash";
+import type { AsyncDataRequestStatus } from "#app";
 
 interface Props {
   transaction: TransactionDTO.Content;
-  isLoading: boolean;
+  status: AsyncDataRequestStatus;
 }
 
 const props = withDefaults(defineProps<Props>(), {});
@@ -69,5 +68,16 @@ const dropdownItems = computed(() => {
       },
     ],
   ];
+});
+
+const isLoading = computed(() => {
+  if (selectedTransactionId.value !== props.transaction.id) {
+    return false;
+  }
+  if (props.status === "pending") {
+    return true;
+  } else {
+    return false;
+  }
 });
 </script>

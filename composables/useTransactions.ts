@@ -1,88 +1,76 @@
-import type { TransactionDTO } from "~/types/transaction.model";
-import { ref } from "vue";
 import type { AsyncDataRequestStatus } from "#app";
-
+import type { TransactionDTO } from "~/types/transaction.model";
+interface Status {
+  getAll: AsyncDataRequestStatus;
+  getOneById: AsyncDataRequestStatus;
+  updateOneById: AsyncDataRequestStatus;
+  deleteOneById: AsyncDataRequestStatus;
+}
 export const useTransactions = () => {
   const transaction = ref<TransactionDTO.Content>({} as TransactionDTO.Content);
   const transactionList = ref<TransactionDTO.Content[]>([]);
-  const status = ref(null);
-  const pending = ref<boolean>(false);
-  const error = ref();
-  const reset = () => {
-    status.value = null;
-    error.value = null;
-    pending.value = true;
-  };
+  const status = ref<Status>({
+    deleteOneById: "idle",
+    getAll: "idle",
+    getOneById: "idle",
+    updateOneById: "idle",
+  } as Status);
   const getAll = async () => {
-    const result = await useFetch<TransactionDTO.GetAll.Response>(
-      "/api/v1/transaction"
-    );
-    console.log("🚀 ~ getAll ~ result.pending.value:", result.pending.value);
-    transactionList.value = result.data.value ?? [];
-    status.value = result.status.value;
-    error.value = result.error.value;
-    pending.value = result.pending.value;
+    const result = useFetch<TransactionDTO.Content[]>("/api/v1/transaction");
+    try {
+      status.value.getAll = "pending";
+      await result.execute();
+      transactionList.value = result.data.value ?? [];
+    } catch (error) {
+      console.log(error);
+      status.value.getAll = "error";
+    } finally {
+      status.value.getAll = "success";
+    }
   };
-
-  const amir = {
-    status: ref<AsyncDataRequestStatus>("idle"),
-    error: ref<object | null>(null),
-    pending: ref<boolean>(false),
-    data: ref<object | null>(null),
-    fetch: async () => {
-      // amir.data.value = null;
-      // amir.error.value = null;
-      // amir.status.value = "idle";
-      // amir.pending.value = false;
-      const result = await useFetch<TransactionDTO.GetAll.Response>(
-        "/api/v1/transaction"
-      );
-      amir.data.value = result.data.value;
-      amir.error.value = result.error.value;
-      amir.status.value = result.status.value;
-      amir.pending.value = result.pending.value;
-      result.refresh();
-    },
-  };
-
-  const getAllData = async () => {
-    return await useFetch<TransactionDTO.GetAll.Response>(
-      "/api/v1/transaction"
+  const getOneById = async (id: TransactionDTO.Content["id"]) => {
+    const result = useFetch<TransactionDTO.Content>(
+      `/api/v1/transaction/${id}`
     );
+    try {
+      status.value.getOneById = "pending";
+      await result.execute();
+      transaction.value = result.data.value ?? ({} as TransactionDTO.Content);
+    } catch (error) {
+      console.log(error);
+      status.value.getOneById = "error";
+    } finally {
+      status.value.getOneById = "success";
+    }
   };
-
-  const getOneById = async () => {
-    const result = await useFetch<TransactionDTO.GetOneById.Response>(
-      `/api/v1/transaction/${transaction.value.id}`
-    );
-    status.value = result.status.value;
-    error.value = result.error.value;
-    pending.value = result.pending.value;
+  const updateOneById = async (transaction: TransactionDTO.Content) => {
+    const result = useFetch(`/api/v1/transaction/${transaction.id}`, {
+      method: "put",
+      body: transaction,
+    });
+    try {
+      status.value.updateOneById = "pending";
+      await result.execute();
+    } catch (error) {
+      console.log(error);
+      status.value.updateOneById = "error";
+    } finally {
+      status.value.updateOneById = "success";
+    }
   };
-
-  const updateOneById = async () => {
-    const result = await useFetch(
-      `/api/v1/transaction/${transaction.value.id}`,
-      {
-        method: "put",
-        body: transaction.value,
-      }
-    );
-    status.value = result.status.value;
-    error.value = result.error.value;
-    pending.value = result.pending.value;
-  };
-
-  const deleteOneById = async () => {
-    const result = await useFetch(
-      `/api/v1/transaction/${transaction.value.id}`,
-      {
-        method: "delete",
-      }
-    );
-    status.value = result.status.value;
-    error.value = result.error.value;
-    pending.value = result.pending.value;
+  const deleteOneById = async (id: TransactionDTO.Content["id"]) => {
+    const result = useFetch(`/api/v1/transaction/${id}`, {
+      method: "delete",
+    });
+    try {
+      status.value.deleteOneById = "pending";
+      await result.execute();
+    } catch (error) {
+      console.log(error);
+      status.value.deleteOneById = "error";
+    } finally {
+      status.value.deleteOneById = "success";
+    }
   };
 
   interface Grouped {
@@ -130,8 +118,6 @@ export const useTransactions = () => {
     transaction,
     transactionList,
     status,
-    pending,
-    error,
     getAll,
     getOneById,
     updateOneById,
@@ -141,7 +127,5 @@ export const useTransactions = () => {
     inComesTotal,
     expenseCount,
     expenseTotal,
-    amir,
-    getAllData,
   };
 };

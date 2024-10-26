@@ -29,7 +29,7 @@
       @reset="emits('close')"
     >
       <UFormGroup label="Amount" name="amount" required>
-        <USkeleton v-if="props.isFetching" class="h-8" />
+        <USkeleton v-if="props.isFetching === 'pending'" class="h-8" />
         <UInput
           v-else
           v-model.number="amountComputed"
@@ -39,7 +39,7 @@
       </UFormGroup>
 
       <UFormGroup label="Description" name="description" required>
-        <USkeleton v-if="props.isFetching" class="h-32" />
+        <USkeleton v-if="props.isFetching === 'pending'" class="h-32" />
         <UTextarea
           v-else
           v-model="descriptionComputed"
@@ -48,12 +48,12 @@
         />
       </UFormGroup>
       <UFormGroup label="Created at" name="createdAt" required>
-        <USkeleton v-if="props.isFetching" class="h-8" />
+        <USkeleton v-if="props.isFetching === 'pending'" class="h-8" />
         <UInput v-else v-model="createdAtComputed" type="date" />
       </UFormGroup>
       <div class="grid grid-cols-2 gap-x-4">
         <UFormGroup label="Category" name="category" required>
-          <USkeleton v-if="props.isFetching" class="h-8" />
+          <USkeleton v-if="props.isFetching === 'pending'" class="h-8" />
           <USelect
             v-else
             v-model="categoryComputed"
@@ -62,7 +62,7 @@
           />
         </UFormGroup>
         <UFormGroup label="Type" name="type" required>
-          <USkeleton v-if="props.isFetching" class="h-8" />
+          <USkeleton v-if="props.isFetching === 'pending'" class="h-8" />
           <USelect
             v-else
             v-model="typeComputed"
@@ -72,7 +72,11 @@
         </UFormGroup>
       </div>
       <div class="space-x-4">
-        <UButton label="Submit" type="submit" :loading="props.isSubmitting" />
+        <UButton
+          label="Submit"
+          type="submit"
+          :loading="props.isSubmitting === 'pending'"
+        />
         <UButton label="Cancel" type="reset" variant="ghost" />
         <UButton label="Reset" variant="ghost" @click="clearForm" />
       </div>
@@ -83,15 +87,17 @@
 import { transactionSchema } from "~/schema/transaction.schema";
 import type { TransactionDTO } from "~/types/transaction.model";
 import { categories, types } from "~/constants";
+import type { AsyncDataRequestStatus } from "#app";
+import dayjs from "#build/dayjs.imports.mjs";
 interface Props {
   transaction: TransactionDTO.Content;
-  isSubmitting: boolean;
-  isFetching: boolean;
+  isSubmitting: AsyncDataRequestStatus;
+  isFetching: AsyncDataRequestStatus;
 }
 const props = withDefaults(defineProps<Props>(), {
   transaction: () => ({}) as TransactionDTO.Content,
-  isSubmitting: false,
-  isFetching: false,
+  isSubmitting: "idle",
+  isFetching: "idle",
 });
 const form = ref();
 
@@ -125,7 +131,7 @@ const descriptionComputed = computed({
 });
 
 const createdAtComputed = computed({
-  get: () => props.transaction.createdAt,
+  get: () => dayjs(props.transaction.createdAt).format("YYYY-MM-DD"),
   set: (event) => {
     return emits("update:transaction", {
       ...props.transaction,
