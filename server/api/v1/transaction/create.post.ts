@@ -1,19 +1,21 @@
-import { createClient } from "@supabase/supabase-js";
+// import { createClient } from "@supabase/supabase-js";
 import type { TransactionDTO } from "~/types/transaction.model";
 import _ from "lodash";
+// import { useSupabase } from "~/composables/useSupabase";
 export default defineEventHandler(async (event) => {
-  const supabaseUrl = process.env.SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_KEY;
-
-  if (!supabaseUrl || !supabaseKey) {
-    throw new Error("Supabase URL or Key is missing");
-  }
-
-  const supabase = createClient(supabaseUrl, supabaseKey);
-
   const body: TransactionDTO.CreateOne.Request = await readBody(event);
-  const obj = _.omit(body, ["id"]);
-  const { data, error } = await supabase
+  const dataa = _.pick(body, ["transaction", "supabase"]);
+  const obj = _.omit(dataa, ["id"]);
+
+
+  console.log(typeof dataa.supabase);
+  
+  // console.log("🚀 ~ defineEventHandler ~ obj:", dataa.supabase.form);
+
+  // const 
+  // console.log("🚀 ~ defineEventHandler ~ obj:", dataa.transaction);
+  // console.log("🚀 ~ defineEventHandler ~ obj:", obj);
+  const { data, error } = await dataa.supabase
     .from("transactions")
     .insert(obj)
     .select();
