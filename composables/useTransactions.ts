@@ -7,6 +7,8 @@ interface Status {
   deleteOneById: AsyncDataRequestStatus;
 }
 export const useTransactions = () => {
+  const supabase = useSupabaseClient();
+
   const transaction = ref<TransactionDTO.Content>({} as TransactionDTO.Content);
   const transactionList = ref<TransactionDTO.Content[]>([]);
   const status = ref<Status>({
@@ -23,10 +25,20 @@ export const useTransactions = () => {
       const { error } = await useAsyncData("create-transaction", async () => {
         const result = await useFetch(`/api/v1/transaction/create`, {
           method: "POST",
-          body: transaction.value,
+          body: {
+            transaction: transaction.value,
+            supabase: supabase,
+          },
         });
-
         return result.data.value;
+        // const { data, error } = await supabase
+        //   .from("transactions")
+        //   .insert(transaction.value)
+        //   .select();
+
+        // if (error) return [];
+
+        // return data;
       });
 
       if (error.value) {
