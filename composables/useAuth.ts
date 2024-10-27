@@ -39,13 +39,22 @@ export const useAuth = () => {
   const submit = async () => {
     pending.value = "pending";
     try {
-      await useFetch(`/api/v1/auth/login`, {
+      const { error } = await useFetch(`/api/v1/auth/login`, {
         method: "post",
         body: {
           email: email.value,
         },
       });
-      pending.value = "success";
+      if (error.value) {
+        pending.value = "error";
+        toast.add({
+          title: "Error",
+          description: error.value.message,
+          color: "red",
+        });
+      } else {
+        pending.value = "success";
+      }
     } catch (error) {
       console.log(error);
       pending.value = "error";
