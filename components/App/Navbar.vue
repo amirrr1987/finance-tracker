@@ -14,6 +14,8 @@
             v-model="colorMode.preference"
             :options="['light', 'dark', 'sepia']"
           />
+          <UButton />
+          <AuthSignOut />
         </ClientOnly>
       </div>
     </UContainer>
@@ -21,19 +23,6 @@
 </template>
 <script setup lang="ts">
 const colorMode = useColorMode();
-const user = useSupabaseUser();
-
-watch(
-  user,
-  () => {
-    if (user) {
-      console.log(user.value);
-    }
-  },
-  {
-    immediate: true,
-  }
-);
 </script>
 <style>
 .light {
