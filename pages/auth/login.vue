@@ -5,7 +5,6 @@ import { authSchema } from "~/schema/auth.schema";
 import type { AuthDTO } from "~/types/auth.model";
 const schema = z.object({
   email: authSchema.login.request,
-  password: z.string().min(4, "Must be at least 4 characters"),
 });
 
 type Schema = {
@@ -14,14 +13,39 @@ type Schema = {
 
 const state = reactive({
   email: undefined,
-  password: undefined,
 });
-const auth = useAuth();
+// const auth = useAuth();
+const isPending = ref<boolean>(false);
+const supabse = useSupabaseClient();
+const toast = useToast();
+
+const isSuccess = ref<boolean>(false);
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-  // Do something with data
-  console.log(event.data);
-  auth.email.value = state.email ?? "";
-  await auth.submit();
+  // auth.email.value = state.email ?? "";
+  // await auth.submit();
+  isPending.value = true;
+  try {
+    const { error } = await supabse.auth.signInWithOtp({
+      email: state.email ?? "",
+      options: {
+        emailRedirectTo: "http://localhost:3000/auth/confirm",
+      },
+    });
+    if (error) {
+      toast.add({
+        title: "Error authentication",
+        description: error.message,
+        color: "red",
+      });
+    }
+    isSuccess.value = true;
+  } catch (error) {
+    console.log("catch");
+    console.log(error);
+    console.log("catch");
+  } finally {
+    isPending.value = false;
+  }
 }
 definePageMeta({
   layout: "auth",
@@ -29,17 +53,22 @@ definePageMeta({
 </script>
 
 <template>
-  <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
+  <UForm
+    v-if="!isSuccess"
+    :schema="schema"
+    :state="state"
+    class="space-y-4"
+    @submit="onSubmit"
+  >
     <UFormGroup label="Email" name="email">
       <UInput v-model="state.email" />
     </UFormGroup>
 
-    <UFormGroup label="Password" name="password">
-      <UInput v-model="state.password" type="password" />
-    </UFormGroup>
-
-    <UButton type="submit" :loading="auth.pending.value === 'pending'">
+    <UButton type="submit" :loading="isPending" :disabled="isPending">
       Submit
     </UButton>
   </UForm>
+  <UCard v-else>
+    {{ state.email }}
+  </UCard>
 </template>
