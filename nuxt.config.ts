@@ -23,7 +23,7 @@ export default defineNuxtConfig({
     redirect: false,
     redirectOptions: {
       login: "/auth/login",
-      callback: "/",
+      callback: "/auth/confirm",
     },
   },
   dayjs: {
