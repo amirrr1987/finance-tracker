@@ -5,16 +5,17 @@
     <UContainer class="flex justify-between items-center">
       <NuxtLink to="/">Fiance Tracker</NuxtLink>
       <div class="flex gap-x-4">
-        <UAvatar
-          src="https://avatars.githubusercontent.com/u/739984?v=4"
-          alt="Avatar"
-        />
         <ClientOnly>
-          <USelect
+          <USelectMenu
             v-model="colorMode.preference"
-            :options="['light', 'dark', 'sepia']"
-          />
-          <UButton />
+            :options="items"
+            option-attribute="value"
+            value-attribute="value"
+          >
+            <template #leading>
+              <UIcon :name="getIcon(colorMode.preference)" class="w-5 h-5" />
+            </template>
+          </USelectMenu>
           <AuthSignOut />
         </ClientOnly>
       </div>
@@ -23,6 +24,21 @@
 </template>
 <script setup lang="ts">
 const colorMode = useColorMode();
+const getIcon = (value: string) => {
+  const index = items.findIndex((item) => item.value === value);
+  return items[index].icon;
+};
+const items = [
+  {
+    value: "light",
+    icon: "i-heroicons-sun",
+  },
+
+  {
+    value: "dark",
+    icon: "i-heroicons-moon",
+  },
+];
 </script>
 <style>
 .light {
