@@ -8,7 +8,5 @@ export const useSupabase = () => {
     throw new Error("Supabase URL or Key is missing");
   }
 
-  const supabase = createClient(supabaseUrl, supabaseKey);
-
-  return supabase;
+  return createClient(supabaseUrl, supabaseKey);
 };
