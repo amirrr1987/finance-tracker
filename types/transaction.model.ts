@@ -2,6 +2,10 @@
 import type { z } from "zod";
 import type { transactionSchema } from "~/schema/transaction.schema";
 
+export interface Grouped {
+  [key: string]: TransactionDTO.Content[];
+}
+
 export namespace TransactionDTO {
   export type Content = z.input<typeof transactionSchema.content>;
 

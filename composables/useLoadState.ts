@@ -1,6 +1,8 @@
-export const useLoading = () => {
+export const useLoadState = () => {
   const isLoading = ref<boolean>(false);
-  const start = () => (isLoading.value = true);
+  const start = () => {
+    isLoading.value = true;
+  };
   const stop = () => (isLoading.value = false);
   return { isLoading, start, stop };
 };

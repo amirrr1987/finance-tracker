@@ -10,11 +10,19 @@
         />
       </UContainer>
     </section>
+    <TrendList
+      :expense-count="transactionStore.expenseCount"
+      :expense-total="transactionStore.expenseTotal"
+      :in-come-count="transactionStore.inComeCount"
+      :in-comes-total="transactionStore.inComesTotal"
+      :is-loading="transactionStore.status.getAll !== 'success'"
+    />
     <TransactionList />
   </div>
 </template>
 <script setup lang="ts">
 import { transActionViewOptions } from "~/constants";
 const selectedView = ref(transActionViewOptions[1]);
-const x = useSelectedTime(selectedView)
+const selectedTime = useSelectedTime(selectedView);
+const transactionStore = useTransactionStore();
 </script>

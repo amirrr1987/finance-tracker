@@ -6,6 +6,7 @@ export const schema = z.object({
   description: z.string(),
   category: z.string(),
   id: z.number(),
+  // user_id: z.string(),
   createdAt: z.string(),
 });
 export const transactionSchema = {

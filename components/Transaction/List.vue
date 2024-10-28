@@ -1,24 +1,11 @@
 <template>
-  <TrendList
-    :expense-count="transactions.expenseCount.value"
-    :expense-total="transactions.expenseTotal.value"
-    :in-come-count="transactions.inComeCount.value"
-    :in-comes-total="transactions.inComesTotal.value"
-    :is-loading="transactions.status.value.getAll === 'pending'"
-  />
-
   <section>
-    <UContainer>
-      <!-- {{ transactions.transactions.all.value }} -->
-    </UContainer>
-  </section>
-  <section class="">
     <UContainer>
       <TransactionForm
         v-model="isOpen"
-        v-model:transaction="transactions.transaction.value"
-        :is-fetching="transactions.status.value.getOneById"
-        :is-submitting="transactions.status.value.updateOneById"
+        v-model:transaction="transactionStore.transaction"
+        :is-fetching="transactionStore.status.getOneById"
+        :is-submitting="transactionStore.status.updateOneById"
         @close="isOpen = false"
         @submit="submitTransaction"
       />
@@ -30,13 +17,14 @@
           @click="isOpen = true"
         />
       </div>
-      <template v-if="transactions.status.value.getAll === 'pending'">
+      <template v-if="transactionStore.status.getAll === 'pending'">
         <USkeleton v-for="item in 4" :key="item" class="h-12 mb-4" />
       </template>
-      <template v-if="transactions.status.value.getAll === 'success'">
+      <template v-if="transactionStore.status.getAll === 'success'">
         <template
-          v-for="(transactionGroupByDate, date) in transactions
-            .transactionListGroupByDate.value"
+          v-for="(
+            transactionGroupByDate, date
+          ) in transactionStore.transactionsGroupByDate"
           :key="date"
         >
           <div class="pt-12 space-y-4">
@@ -49,7 +37,7 @@
                 v-for="transaction in transactionGroupByDate"
                 :key="transaction.id"
                 :transaction="transaction"
-                :status="transactions.status.value.deleteOneById"
+                :status="transactionStore.status.deleteOneById"
                 @edit="editTransaction"
                 @delete="deleteTransaction"
               />
@@ -63,29 +51,29 @@
 <script setup lang="ts">
 import type { TransactionDTO } from "~/types/transaction.model";
 
-const transactions = useTransactions();
-await transactions.getAll();
+const transactionStore = useTransactionStore();
+await transactionStore.getAll();
 
 const isOpen = ref(false);
 const editTransaction = async (id: TransactionDTO.Content["id"]) => {
-  transactions.findAndSetTransactionById(id);
   isOpen.value = true;
-  await transactions.getOneById();
+  await transactionStore.getOneById(id);
 };
 const deleteTransaction = async (id: TransactionDTO.Content["id"]) => {
-  transactions.findAndSetTransactionById(id);
-  await transactions.deleteOneById();
-  await transactions.getAll();
+  await transactionStore.deleteOneById(id);
+  await transactionStore.getAll();
 };
 
 const submitTransaction = async () => {
-  if (transactions.transaction.value.id) {
-    await transactions.updateOneById();
+  if (transactionStore.transaction.id) {
+    await transactionStore.updateOneById(transactionStore.transaction);
+    console.log("upadte");
   } else {
-    await transactions.create();
+    await transactionStore.create();
+    console.log("create");
   }
   isOpen.value = false;
-  transactions.transaction.value = {} as TransactionDTO.Content;
-  await transactions.getAll();
+  transactionStore.transaction = {} as TransactionDTO.Content;
+  await transactionStore.getAll();
 };
 </script>

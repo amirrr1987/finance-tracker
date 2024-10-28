@@ -30,7 +30,7 @@ export default defineNuxtConfig({
     locales: ["en", "fa"],
     plugins: ["relativeTime", "utc", "timezone", "isLeapYear"],
     defaultLocale: "fa",
-    defaultTimezone: "America/New_York",
+    defaultTimezone: "Asia/Tehran",
   },
   runtimeConfig: {
     public: {

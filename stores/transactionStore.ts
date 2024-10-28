@@ -1,18 +1,107 @@
+import type { AsyncDataRequestStatus } from "#app";
 import { defineStore } from "pinia";
-import type { TransactionDTO } from "~/types/transaction.model";
-// import type { TransactionDTO } from "~/types/transaction.model";
+import type { Grouped, TransactionDTO } from "~/types/transaction.model";
+interface Status {
+  getAll: AsyncDataRequestStatus;
+  getOneById: AsyncDataRequestStatus;
+  updateOneById: AsyncDataRequestStatus;
+  deleteOneById: AsyncDataRequestStatus;
+}
 export const useTransactionStore = defineStore("transaction", () => {
+  const supabaseClient = useSupabaseClient();
+  const supabaseUser = useSupabaseUser();
+  const loadState = useLoadState();
   const transaction = ref<TransactionDTO.Content>({} as TransactionDTO.Content);
-  const transactions = ref<TransactionDTO.Content[]>([]);
-  const transactionsCurd = useTransactions();
+  const transactionList = ref<TransactionDTO.Content[]>([]);
+  const status = ref<Status>({} as Status);
 
-  interface Grouped {
-    [key: string]: TransactionDTO.Content[];
-  }
+  const create = async () => {
+    status.value.updateOneById = "pending";
+    try {
+      await supabaseClient
+        .from("transactions")
+        .insert(transaction.value as TransactionDTO.Content)
+        .select();
+      status.value.updateOneById = "success";
+    } catch (error) {
+      console.error(error);
+      status.value.updateOneById = "error";
+    }
+  };
+
+  const getAll = async () => {
+    status.value.getAll = "pending";
+    loadState.start();
+    try {
+      const result = await supabaseClient.from("transactions").select();
+      transactionList.value = result.data as TransactionDTO.Content[];
+      status.value.getAll = "success";
+    } catch (error) {
+      console.log(error);
+      status.value.getAll = "error";
+    } finally {
+      loadState.stop();
+    }
+  };
+
+  const getOneById = async (id: TransactionDTO.Content["id"]) => {
+    status.value.getOneById = "pending";
+    loadState.start();
+
+    try {
+      const result = await supabaseClient
+        .from("transactions")
+        .select()
+        .eq("id", id)
+        .single();
+      transaction.value = result.data ?? ({} as TransactionDTO.Content);
+      status.value.getOneById = "success";
+    } catch (error) {
+      console.log(error);
+      status.value.getOneById = "error";
+    } finally {
+      loadState.stop();
+    }
+  };
+
+  const updateOneById = async (obj: TransactionDTO.Content) => {
+    console.log("🚀 ~ updateOneById ~ obj:", obj)
+    status.value.updateOneById = "pending";
+    loadState.start();
+    try {
+      await supabaseClient.from("transactions").upsert(obj)
+      status.value.updateOneById = "success";
+    } catch (error) {
+      console.log(error);
+      status.value.updateOneById = "error";
+    } finally {
+      loadState.stop();
+    }
+  };
+
+  const deleteOneById = async (id: TransactionDTO.Content["id"]) => {
+    status.value.deleteOneById = "pending";
+    loadState.start();
+    try {
+      await supabaseClient.from("transactions").delete().eq("id", id);
+      status.value.deleteOneById = "success";
+    } catch (error) {
+      console.log(error);
+      status.value.deleteOneById = "error";
+    } finally {
+      loadState.stop();
+    }
+  };
+
+  const findAndSetTransactionById = (id: TransactionDTO.Content["id"]) => {
+    const index = transactionList.value.findIndex((item) => item.id === id);
+    transaction.value = transactionList.value[index];
+  };
+
   const { $dateConvertor } = useNuxtApp();
   const transactionsGroupByDate = computed(() => {
     const grouped: Grouped = {};
-    for (const transaction of transactions.value) {
+    for (const transaction of transactionList.value) {
       const date = $dateConvertor(transaction.createdAt);
       if (!grouped[date]) {
         grouped[date] = [];
@@ -23,7 +112,7 @@ export const useTransactionStore = defineStore("transaction", () => {
   });
 
   const inComes = computed(() => {
-    return transactions.value.filter((i) => i.type === "Income");
+    return transactionList.value.filter((i) => i.type === "Income");
   });
   const inComeCount = computed(() => inComes.value.length);
   const inComesTotal = computed(() => {
@@ -34,7 +123,7 @@ export const useTransactionStore = defineStore("transaction", () => {
     );
   });
   const expenses = computed(() => {
-    return transactions.value.filter(
+    return transactionList.value.filter(
       (i: TransactionDTO.Content) => i.type === "Expense"
     );
   });
@@ -48,7 +137,15 @@ export const useTransactionStore = defineStore("transaction", () => {
   });
 
   return {
-    ...transactionsCurd,
+    transaction,
+    transactionList,
+    getAll,
+    create,
+    getOneById,
+    updateOneById,
+    deleteOneById,
+    findAndSetTransactionById,
+    status,
     transactionsGroupByDate,
     inComeCount,
     inComesTotal,
