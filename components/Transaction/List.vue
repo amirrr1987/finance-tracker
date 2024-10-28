@@ -5,7 +5,11 @@
         v-model="isOpen"
         v-model:transaction="transactionStore.transaction"
         :is-fetching="transactionStore.status.getOneById"
-        :is-submitting="transactionStore.status.updateOneById"
+        :is-submitting="
+          transactionStore.transaction.id
+            ? transactionStore.status.updateOneById
+            : transactionStore.status.create
+        "
         @close="isOpen = false"
         @submit="submitTransaction"
       />
@@ -67,13 +71,10 @@ const deleteTransaction = async (id: TransactionDTO.Content["id"]) => {
 const submitTransaction = async () => {
   if (transactionStore.transaction.id) {
     await transactionStore.updateOneById(transactionStore.transaction);
-    console.log("upadte");
   } else {
-    await transactionStore.create();
-    console.log("create");
+    await transactionStore.create(transactionStore.transaction);
   }
   isOpen.value = false;
-  transactionStore.transaction = {} as TransactionDTO.Content;
   await transactionStore.getAll();
 };
 </script>
