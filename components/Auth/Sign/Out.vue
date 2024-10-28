@@ -55,4 +55,7 @@ const items = [
       />
     </template>
   </UDropdown>
+  <UButton v-else to="/auth/login">
+    Login
+  </UButton>
 </template>
