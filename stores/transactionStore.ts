@@ -6,10 +6,10 @@ interface Status {
   getOneById: AsyncDataRequestStatus;
   updateOneById: AsyncDataRequestStatus;
   deleteOneById: AsyncDataRequestStatus;
+  create: AsyncDataRequestStatus;
 }
 export const useTransactionStore = defineStore("transaction", () => {
   const supabaseClient = useSupabaseClient();
-  const supabaseUser = useSupabaseUser();
   const loadState = useLoadState();
   const transaction = ref<TransactionDTO.Content>({} as TransactionDTO.Content);
   const transactionList = ref<TransactionDTO.Content[]>([]);
@@ -18,22 +18,21 @@ export const useTransactionStore = defineStore("transaction", () => {
   const create = async (obj: TransactionDTO.Content) => {
     status.value.updateOneById = "pending";
     try {
-      const { error } = await useAsyncData(
-        `fetchTransaction_${id}`,
-        async () => {
-          const result = await supabaseClient
-            .from("transactions")
-            .insert(obj)
-            .select();
+      const { error } = await useAsyncData(`createTransaction`, async () => {
+        const result = await supabaseClient
+          .from("transactions")
+          .insert(obj)
+          .select();
 
-          return result.data ?? ({} as TransactionDTO.Content);
-        }
-      );
+        return result.data ?? ({} as TransactionDTO.Content);
+      });
 
-      status.value.getOneById = error.value ? "error" : "success";
+      status.value.create = error.value ? "error" : "success";
     } catch (error) {
       console.error(error);
-      status.value.updateOneById = "error";
+      status.value.create = "error";
+    } finally {
+      loadState.stop();
     }
   };
 
@@ -42,7 +41,7 @@ export const useTransactionStore = defineStore("transaction", () => {
     loadState.start();
     try {
       const { data, error } = await useAsyncData(
-        "fetchTransactions",
+        "getALlTransactions",
         async () => {
           const result = await supabaseClient.from("transactions").select();
           return result.data as TransactionDTO.Content[];
@@ -63,7 +62,7 @@ export const useTransactionStore = defineStore("transaction", () => {
     loadState.start();
     try {
       const { data, error } = await useAsyncData(
-        `fetchTransaction_${id}`,
+        `getTransaction_${id}`,
         async () => {
           const result = await supabaseClient
             .from("transactions")
@@ -88,8 +87,14 @@ export const useTransactionStore = defineStore("transaction", () => {
     status.value.updateOneById = "pending";
     loadState.start();
     try {
-      await supabaseClient.from("transactions").update(obj);
-      status.value.updateOneById = "success";
+      const { error } = await useAsyncData(
+        `updateTransaction_${obj.id}`,
+        async () => {
+          await supabaseClient.from("transactions").upsert(obj);
+        }
+      );
+      transaction.value = {} as TransactionDTO.Content;
+      status.value.updateOneById = error.value ? "error" : "success";
     } catch (error) {
       console.log(error);
       status.value.updateOneById = "error";
@@ -102,8 +107,13 @@ export const useTransactionStore = defineStore("transaction", () => {
     status.value.deleteOneById = "pending";
     loadState.start();
     try {
-      await supabaseClient.from("transactions").delete().eq("id", id);
-      status.value.deleteOneById = "success";
+      const { error } = await useAsyncData(
+        `deleteTransaction_${id}`,
+        async () => {
+          await supabaseClient.from("transactions").delete().eq("id", id);
+        }
+      );
+      status.value.deleteOneById = error.value ? "error" : "success";
     } catch (error) {
       console.log(error);
       status.value.deleteOneById = "error";
