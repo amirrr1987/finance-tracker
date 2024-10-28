@@ -15,14 +15,22 @@ export const useTransactionStore = defineStore("transaction", () => {
   const transactionList = ref<TransactionDTO.Content[]>([]);
   const status = ref<Status>({} as Status);
 
-  const create = async () => {
+  const create = async (obj: TransactionDTO.Content) => {
     status.value.updateOneById = "pending";
     try {
-      await supabaseClient
-        .from("transactions")
-        .insert(transaction.value as TransactionDTO.Content)
-        .select();
-      status.value.updateOneById = "success";
+      const { error } = await useAsyncData(
+        `fetchTransaction_${id}`,
+        async () => {
+          const result = await supabaseClient
+            .from("transactions")
+            .insert(obj)
+            .select();
+
+          return result.data ?? ({} as TransactionDTO.Content);
+        }
+      );
+
+      status.value.getOneById = error.value ? "error" : "success";
     } catch (error) {
       console.error(error);
       status.value.updateOneById = "error";
@@ -33,9 +41,15 @@ export const useTransactionStore = defineStore("transaction", () => {
     status.value.getAll = "pending";
     loadState.start();
     try {
-      const result = await supabaseClient.from("transactions").select();
-      transactionList.value = result.data as TransactionDTO.Content[];
-      status.value.getAll = "success";
+      const { data, error } = await useAsyncData(
+        "fetchTransactions",
+        async () => {
+          const result = await supabaseClient.from("transactions").select();
+          return result.data as TransactionDTO.Content[];
+        }
+      );
+      transactionList.value = data.value ?? [];
+      status.value.getAll = error.value ? "error" : "success";
     } catch (error) {
       console.log(error);
       status.value.getAll = "error";
@@ -47,15 +61,21 @@ export const useTransactionStore = defineStore("transaction", () => {
   const getOneById = async (id: TransactionDTO.Content["id"]) => {
     status.value.getOneById = "pending";
     loadState.start();
-
     try {
-      const result = await supabaseClient
-        .from("transactions")
-        .select()
-        .eq("id", id)
-        .single();
-      transaction.value = result.data ?? ({} as TransactionDTO.Content);
-      status.value.getOneById = "success";
+      const { data, error } = await useAsyncData(
+        `fetchTransaction_${id}`,
+        async () => {
+          const result = await supabaseClient
+            .from("transactions")
+            .select()
+            .eq("id", id)
+            .single();
+          return result.data ?? ({} as TransactionDTO.Content);
+        }
+      );
+
+      transaction.value = data.value ?? ({} as TransactionDTO.Content);
+      status.value.getOneById = error.value ? "error" : "success";
     } catch (error) {
       console.log(error);
       status.value.getOneById = "error";
@@ -65,11 +85,10 @@ export const useTransactionStore = defineStore("transaction", () => {
   };
 
   const updateOneById = async (obj: TransactionDTO.Content) => {
-    console.log("🚀 ~ updateOneById ~ obj:", obj)
     status.value.updateOneById = "pending";
     loadState.start();
     try {
-      await supabaseClient.from("transactions").upsert(obj)
+      await supabaseClient.from("transactions").update(obj);
       status.value.updateOneById = "success";
     } catch (error) {
       console.log(error);
