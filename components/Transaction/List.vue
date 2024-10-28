@@ -51,8 +51,8 @@
           </template>
         </template>
         <template v-else>
-          <div class="ant-empty css-17yhhjv">
-            <div class="ant-empty-image">
+          <div class="flex justify-center items-center">
+            <div class="">
               <svg
                 width="184"
                 height="152"
