@@ -51,7 +51,7 @@
           </template>
         </template>
         <template v-else>
-          <div class="flex flex-col justify-center items-center">
+          <div class="flex flex-col justify-center items-center p-4 gap-4">
             <div class="">
               <svg
                 width="184"
