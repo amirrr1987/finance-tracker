@@ -10,13 +10,7 @@
         />
       </UContainer>
     </section>
-    <TrendList
-      :expense-count="transactionStore.expenseCount"
-      :expense-total="transactionStore.expenseTotal"
-      :in-come-count="transactionStore.inComeCount"
-      :in-comes-total="transactionStore.inComesTotal"
-      :is-loading="transactionStore.status.getAll !== 'success'"
-    />
+    <TrendList />
     <TransactionList />
   </div>
 </template>
@@ -24,5 +18,7 @@
 import { transActionViewOptions } from "~/constants";
 const selectedView = ref(transActionViewOptions[1]);
 const selectedTime = useSelectedTime(selectedView);
-const transactionStore = useTransactionStore();
+const transactionStore = useTransactionStore(); 
+
+onMounted(async()=> await transactionStore.getAll())
 </script>
