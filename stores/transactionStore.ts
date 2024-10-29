@@ -1,184 +1,195 @@
-import type { AsyncDataRequestStatus } from "#app";
 import { defineStore } from "pinia";
 import type { Grouped, TransactionDTO } from "~/types/transaction.model";
-interface Status {
-  getAll: AsyncDataRequestStatus;
-  getOneById: AsyncDataRequestStatus;
-  updateOneById: AsyncDataRequestStatus;
-  deleteOneById: AsyncDataRequestStatus;
-  create: AsyncDataRequestStatus;
-}
+
 export const useTransactionStore = defineStore("transaction", () => {
   const supabaseClient = useSupabaseClient();
   const loadState = useLoadState();
+  const statusState = useStatusState();
+  const toast = useToast();
+
+  const { manageError } = useErrorHandler();
+
+  // State Variables
   const transaction = ref<TransactionDTO.Content>({} as TransactionDTO.Content);
   const transactionList = ref<TransactionDTO.Content[]>([]);
-  const status = ref<Status>({} as Status);
 
-  const create = async (obj: TransactionDTO.Content) => {
-    status.value.updateOneById = "pending";
+  // Computed States
+  const isLoading = computed(() => loadState.isLoading.value);
+  const status = computed(() => statusState.status.value);
+
+  // CRUD Operations
+  const create = async (transactionData: TransactionDTO.Content) => {
     try {
-      const { error } = await useAsyncData(`createTransaction`, async () => {
-        const result = await supabaseClient
-          .from("transactions")
-          .insert(obj)
-          .select();
+      statusState.handler("create", "pending");
+      loadState.start("create");
 
-        return result.data ?? ({} as TransactionDTO.Content);
+      const { error } = await useAsyncData("createTransaction", async () => {
+        const { data, error } = await supabaseClient
+          .from("transactions")
+          .insert(transactionData)
+          .single();
+        return data ?? ({} as TransactionDTO.Content);
       });
 
-      status.value.create = error.value ? "error" : "success";
+      if (error.value) throw error.value;
+      statusState.handler("create", "success");
     } catch (error) {
-      console.error(error);
-      status.value.create = "error";
+      manageError(error, "create");
     } finally {
-      loadState.stop();
+      loadState.stop("create");
     }
   };
 
   const getAll = async () => {
-    status.value.getAll = "pending";
-    loadState.start();
     try {
+      statusState.handler("getAll", "pending");
+      loadState.start("getAll");
+      
       const { data, error } = await useAsyncData(
-        "getALlTransactions",
+        "getAllTransactions",
         async () => {
-          const result = await supabaseClient.from("transactions").select();
-          return result.data as TransactionDTO.Content[];
+          const { data, error } = await supabaseClient
+            .from("transactions")
+            .select();
+          return error ? [] : data;
         }
       );
-      transactionList.value = data.value ?? [];
-      status.value.getAll = error.value ? "error" : "success";
+
+      if (error.value) throw error.value;
+      transactionList.value = data.value as TransactionDTO.Content[];
+      statusState.handler("getAll", "success");
     } catch (error) {
-      console.log(error);
-      status.value.getAll = "error";
+      manageError(error, "getAll");
     } finally {
-      loadState.stop();
+      loadState.stop("getAll");
     }
   };
 
   const getOneById = async (id: TransactionDTO.Content["id"]) => {
-    status.value.getOneById = "pending";
-    loadState.start();
     try {
+      statusState.handler("getOneById", "pending");
+      loadState.start("getOneById");
+
       const { data, error } = await useAsyncData(
         `getTransaction_${id}`,
         async () => {
-          const result = await supabaseClient
+          const { data } = await supabaseClient
             .from("transactions")
             .select()
             .eq("id", id)
             .single();
-          return result.data ?? ({} as TransactionDTO.Content);
+          return data ?? ({} as TransactionDTO.Content);
         }
       );
 
+      if (error.value) throw error.value;
       transaction.value = data.value ?? ({} as TransactionDTO.Content);
-      status.value.getOneById = error.value ? "error" : "success";
+      statusState.handler("getOneById", "success");
     } catch (error) {
-      console.log(error);
-      status.value.getOneById = "error";
+      manageError(error, "getOneById");
     } finally {
-      loadState.stop();
+      loadState.stop("getOneById");
     }
   };
 
-  const updateOneById = async (obj: TransactionDTO.Content) => {
-    status.value.updateOneById = "pending";
-    loadState.start();
+  const updateOneById = async (transactionData: TransactionDTO.Content) => {
     try {
+      statusState.handler("updateOneById", "pending");
+      loadState.start("updateOneById");
+
       const { error } = await useAsyncData(
-        `updateTransaction_${obj.id}`,
+        `updateTransaction_${transactionData.id}`,
         async () => {
-          await supabaseClient.from("transactions").upsert(obj);
+          await supabaseClient.from("transactions").upsert(transactionData);
         }
       );
+
+      if (error.value) throw error.value;
       transaction.value = {} as TransactionDTO.Content;
-      status.value.updateOneById = error.value ? "error" : "success";
+      statusState.handler("updateOneById", "success");
     } catch (error) {
-      console.log(error);
-      status.value.updateOneById = "error";
+      manageError(error, "updateOneById");
     } finally {
-      loadState.stop();
+      loadState.stop("updateOneById");
     }
   };
 
   const deleteOneById = async (id: TransactionDTO.Content["id"]) => {
-    status.value.deleteOneById = "pending";
-    loadState.start();
     try {
+      statusState.handler("deleteOneById", "pending");
+      loadState.start("deleteOneById");
+
       const { error } = await useAsyncData(
         `deleteTransaction_${id}`,
         async () => {
           await supabaseClient.from("transactions").delete().eq("id", id);
         }
       );
-      status.value.deleteOneById = error.value ? "error" : "success";
+
+      if (error.value) throw error.value;
+      statusState.handler("deleteOneById", "success");
     } catch (error) {
-      console.log(error);
-      status.value.deleteOneById = "error";
+      manageError(error, "deleteOneById");
     } finally {
-      loadState.stop();
+      loadState.stop("deleteOneById");
     }
   };
 
-  const findAndSetTransactionById = (id: TransactionDTO.Content["id"]) => {
-    const index = transactionList.value.findIndex((item) => item.id === id);
-    transaction.value = transactionList.value[index];
+  // Helper and Computed Properties
+  const findOneById = (id: TransactionDTO.Content["id"]) => {
+    const transactionIndex = transactionList.value.findIndex(
+      (item) => item.id === id
+    );
+    transaction.value =
+      transactionIndex !== -1
+        ? transactionList.value[transactionIndex]
+        : ({} as TransactionDTO.Content);
   };
 
   const { $dateConvertor } = useNuxtApp();
-  const transactionsGroupByDate = computed(() => {
+  const transactionListGroupedByDate = computed(() => {
     const grouped: Grouped = {};
-    for (const transaction of transactionList.value) {
+    transactionList.value.forEach((transaction) => {
       const date = $dateConvertor(transaction.createdAt);
-      if (!grouped[date]) {
-        grouped[date] = [];
-      }
+      if (!grouped[date]) grouped[date] = [];
       grouped[date].push(transaction);
-    }
+    });
     return grouped;
   });
 
-  const inComes = computed(() => {
-    return transactionList.value.filter((i) => i.type === "Income");
-  });
-  const inComeCount = computed(() => inComes.value.length);
-  const inComesTotal = computed(() => {
-    return inComes.value.reduce(
-      (sum: number, transaction: TransactionDTO.Content) =>
-        sum + transaction.amount,
-      0
-    );
-  });
-  const expenses = computed(() => {
-    return transactionList.value.filter(
-      (i: TransactionDTO.Content) => i.type === "Expense"
-    );
-  });
-  const expenseCount = computed(() => expenses.value.length);
-  const expenseTotal = computed(() => {
-    return expenses.value.reduce(
-      (sum: number, transaction: TransactionDTO.Content) =>
-        sum + transaction.amount,
-      0
-    );
-  });
+  const incomeList = computed(() =>
+    transactionList.value.filter((transaction) => transaction.type === "Income")
+  );
+  const incomeListCount = computed(() => incomeList.value.length);
+  const incomeListTotal = computed(() =>
+    incomeList.value.reduce((sum, transaction) => sum + transaction.amount, 0)
+  );
+
+  const expenseList = computed(() =>
+    transactionList.value.filter(
+      (transaction) => transaction.type === "Expense"
+    )
+  );
+  const expenseCount = computed(() => expenseList.value.length);
+  const expenseListTotal = computed(() =>
+    expenseList.value.reduce((sum, transaction) => sum + transaction.amount, 0)
+  );
 
   return {
+    isLoading,
+    status,
     transaction,
     transactionList,
-    getAll,
     create,
+    getAll,
     getOneById,
     updateOneById,
     deleteOneById,
-    findAndSetTransactionById,
-    status,
-    transactionsGroupByDate,
-    inComeCount,
-    inComesTotal,
+    findOneById,
+    transactionListGroupedByDate,
+    incomeListCount,
+    incomeListTotal,
     expenseCount,
-    expenseTotal,
+    expenseListTotal,
   };
 });
