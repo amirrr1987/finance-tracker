@@ -8,30 +8,30 @@
       <Trend
         color="green"
         title="Income"
-        :amount="props.inComesTotal"
+        :amount="transactionStore.incomeListTotal"
         :last-amount="400"
-        :loading="props.isLoading"
+        :loading="transactionStore.isLoading.getAll"
       />
       <Trend
         color="red"
         title="Expense"
-        :amount="props.expenseTotal"
+        :amount="transactionStore.expenseListTotal"
         :last-amount="1"
-        :loading="props.isLoading"
+        :loading="transactionStore.isLoading.getAll"
       />
       <Trend
         color="green"
         title="Income"
-        :amount="props.inComesTotal"
+        :amount="transactionStore.incomeListTotal"
         :last-amount="3000"
-        :loading="props.isLoading"
+        :loading="transactionStore.isLoading.getAll"
       />
       <Trend
         color="green"
         title="Income"
-        :amount="props.expenseTotal"
+        :amount="transactionStore.expenseListTotal"
         :last-amount="3000"
-        :loading="props.isLoading"
+        :loading="transactionStore.isLoading.getAll"
       />
     </UContainer>
   </section>
@@ -39,19 +39,12 @@
     <UContainer class="text-center">
       <h3 class="text-2xl font-extrabold mb-2">Transactions</h3>
       <p class="text-gray-600 dark:text-gray-400">
-        You has {{ props.inComeCount }} Incomes and
-        {{ props.expenseCount }} expenses this period
+        You has {{ transactionStore.incomeListCount }} Incomes and
+        {{ transactionStore.expenseCount }} expenses this period
       </p>
     </UContainer>
   </section>
 </template>
 <script setup lang="ts">
-interface Props {
-  inComeCount: number;
-  expenseCount: number;
-  inComesTotal: number;
-  expenseTotal: number;
-  isLoading: boolean;
-}
-const props = withDefaults(defineProps<Props>(), {});
+const transactionStore = useTransactionStore();
 </script>
