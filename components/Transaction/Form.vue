@@ -76,6 +76,7 @@
           label="Submit"
           type="submit"
           :loading="props.isSubmitting === 'pending'"
+          :disabled="props.isSubmitting === 'pending'"
         />
         <UButton label="Cancel" type="reset" variant="ghost" />
       </div>
