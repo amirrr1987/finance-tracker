@@ -42,7 +42,7 @@ const items = [
 </script>
 <style>
 .light {
-  background-color: #fefefe;
+  background-color: #f9f9f9;
   color: #091a28;
 }
 .dark {
