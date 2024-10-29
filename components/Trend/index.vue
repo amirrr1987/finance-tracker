@@ -1,5 +1,6 @@
 <template>
-  <div class="border p-4 rounded">
+  <USkeleton v-if="loading" />
+  <UCard v-else>
     <div
       class="font-bold mb-2"
       :class="
@@ -11,28 +12,23 @@
       {{ title }}
     </div>
     <div class="text-2xl font-extrabold text-back dark:text-white mb-2">
-      <USkeleton v-if="loading" class="h-8 w-full" />
-      <div v-else>{{ currency }}</div>
+      {{ currency }}
     </div>
-
-    <div>
-      <USkeleton v-if="loading" class="h-6 w-full" />
-      <div v-else class="flex space-x-1 items-center text-sm">
-        <UIcon
-          :name="icon"
-          class="w-6 h-6"
-          :class="
-            trendingUp
-              ? 'text-green-600 dark:text-green-400'
-              : 'text-red-600 dark:text-red-400'
-          "
-        />
-        <div class="text-xs text-gray-500 dark:gray-400">
-          {{ percentTrend }}% vs last period
-        </div>
+    <div class="flex space-x-1 items-center text-sm">
+      <UIcon
+        :name="icon"
+        class="w-6 h-6"
+        :class="
+          trendingUp
+            ? 'text-green-600 dark:text-green-400'
+            : 'text-red-600 dark:text-red-400'
+        "
+      />
+      <div class="text-xs text-gray-500 dark:gray-400">
+        {{ percentTrend }}% vs last period
       </div>
     </div>
-  </div>
+  </UCard>
 </template>
 <script setup lang="ts">
 interface Props {
