@@ -24,24 +24,24 @@ const appToast = useAppToast();
 const onSubmit = async (event: FormSubmitEvent<Schema>) => {
   const data = {
     data: {
-      full_name: state.fullName,
+      full_name: event.data.fullName,
     },
   };
-  if (state.email !== user.value?.email) {
-    assign(data, { email: state.email });
+  if (event.data.email !== user.value?.email) {
+    assign(data, { email: event.data.email });
   }
   loading.value = true;
 
   try {
     const { error } = await supabase.auth.updateUser(data);
     if (error) {
-      appToast.success("Profile updated", error.message);
+      appToast.error("Error", error.message);
       throw error;
     } else {
       appToast.success("Profile updated", "Profile updated successfully");
     }
   } catch (error) {
-    appToast.error("Profile updated", (error as Error).message);
+    appToast.error("Error", (error as Error).message);
   } finally {
     loading.value = false;
   }
@@ -49,7 +49,7 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
 </script>
 
 <template>
-  <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
+  <UForm :schema="schema" :state="state" class="space-y-4" @submit.prevent="onSubmit">
     <UFormGroup label="Full Name" name="full_name">
       <UInput v-model="state.fullName" />
     </UFormGroup>
