@@ -9,6 +9,8 @@ const user = useSupabaseUser();
 const supabase = useSupabaseClient();
 const uploading = ref(false);
 const fileInput = ref();
+const { url } = useAvatarUrl();
+
 const schema = z.object({
   avatar: z.string(),
   size: z.number().max(20480),
@@ -117,10 +119,7 @@ watch(state, () => {
     class="space-y-4"
     @submit.prevent="onSubmit"
   >
-    <UAvatar
-      :src="`https://zbqnicktyuzlcbhloypg.supabase.co/storage/v1/object/public/avatars/${user?.user_metadata.avatar_url}`"
-      size="3xl"
-    />
+    <UAvatar :src="`${url}`" size="3xl" />
     <NuxtImg src="" />
     <UFormGroup
       label="Avatar"
