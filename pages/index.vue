@@ -5,7 +5,7 @@
         <h1 class="text-4xl font-bold">Summery</h1>
         <USelectMenu
           v-model="selectedView"
-          :options="transActionViewOptions"
+          :options="[...transActionViewOptions]"
           placeholder="Select View"
         />
       </UContainer>
@@ -16,9 +16,12 @@
 </template>
 <script setup lang="ts">
 import { transActionViewOptions } from "~/constants";
-const selectedView = ref(transActionViewOptions[1]);
+const user = useSupabaseUser();
+const selectedView = ref(
+  user.value?.user_metadata.transaction_view ?? transActionViewOptions[1]
+);
 const selectedTime = useSelectedTime(selectedView);
-const transactionStore = useTransactionStore(); 
+const transactionStore = useTransactionStore();
 
-onMounted(async()=> await transactionStore.getAll())
+onMounted(async () => await transactionStore.getAll());
 </script>
