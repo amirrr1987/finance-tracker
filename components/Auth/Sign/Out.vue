@@ -1,6 +1,8 @@
 <script setup lang="ts">
 const user = useSupabaseUser();
 const supabase = useSupabaseClient();
+const { url } = useAvatarUrl();
+
 const items = [
   [
     {
@@ -13,7 +15,7 @@ const items = [
     {
       label: "Settings",
       icon: "i-heroicons-cog-8-tooth",
-      click: ()=> navigateTo('/settings/profile')
+      click: () => navigateTo("/settings/profile"),
     },
   ],
 
@@ -37,7 +39,7 @@ const items = [
     :ui="{ item: { disabled: 'cursor-text select-text' } }"
     :popper="{ placement: 'bottom-start' }"
   >
-    <UAvatar src="https://avatars.githubusercontent.com/u/739984?v=4" />
+    <UAvatar :src="`${url}`" />
 
     <template #account="{ item }">
       <div class="text-left">
@@ -56,7 +58,5 @@ const items = [
       />
     </template>
   </UDropdown>
-  <UButton v-else to="/auth/login">
-    Login
-  </UButton>
+  <UButton v-else to="/auth/login"> Login </UButton>
 </template>
