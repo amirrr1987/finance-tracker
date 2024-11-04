@@ -4,6 +4,7 @@ import type { FormSubmitEvent } from "#ui/types";
 import { debounce } from "lodash";
 import dayjs from "dayjs";
 const loading = ref(false);
+const isDisable = ref(false);
 const user = useSupabaseUser();
 const supabase = useSupabaseClient();
 const uploading = ref(false);
@@ -22,8 +23,9 @@ const state = reactive({
 
 const appToast = useAppToast();
 
-const hideButton = debounce(() => {
-  showButton.value = false;
+const showButton = ref(false);
+const toggleButton = debounce(() => {
+  showButton.value = !showButton.value;
 }, 1000);
 
 type FileBody =
@@ -49,9 +51,12 @@ const targetFile = ref<TargetFile>({
 const isBig = ref(false);
 const getImage = (e) => {
   const file = e[0];
+  if (!file) return;
   isBig.value = false;
+  isDisable.value = false;
   if (file.size > 20480) {
     isBig.value = true;
+    isDisable.value = isBig.value;
   }
   targetFile.value.file = file;
   targetFile.value.name = `avatar-${dayjs().format("YYYY-MM-DD-hh-mm-ss")}.${file.name.split(".").pop()}`;
@@ -78,6 +83,7 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
     fileInput.value.input.value = null;
 
     loading.value = true;
+    isDisable.value = true;
     const { error: authError } = await supabase.auth.updateUser({
       data: {
         avatar_url: targetFile.value.name,
@@ -92,13 +98,14 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
   } finally {
     uploading.value = false;
     loading.value = false;
+    isDisable.value = false;
   }
 };
 
-const showButton = ref(false);
 watch(state, () => {
   if (user.value?.user_metadata.transaction_view !== state.avatar) {
     showButton.value = true;
+    toggleButton();
   }
 });
 </script>
@@ -134,7 +141,7 @@ watch(state, () => {
       type="submit"
       label="Save"
       :loading="loading"
-      :disabled="loading"
+      :disabled="isDisable"
     />
   </UForm>
 </template>
