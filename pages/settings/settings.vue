@@ -2,7 +2,7 @@
 import { z } from "zod";
 import type { FormSubmitEvent } from "#ui/types";
 import { assign } from "lodash";
-
+import { transActionViewOptions } from "~/constants";
 const loading = ref(false);
 const user = useSupabaseUser();
 const supabase = useSupabaseClient();
@@ -14,7 +14,7 @@ const schema = z.object({
 type Schema = z.output<typeof schema>;
 
 const state = reactive({
-  transaction_view: user.value?.user_metadata.transaction_view ?? undefined,
+  transaction_view: user.value?.user_metadata.transaction_view ?? "undefined",
 });
 
 const appToast = useAppToast();
@@ -48,10 +48,14 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
 
 <template>
   <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
-    <UFormGroup label="Transaction view" name="transaction_view" help="Choose how ypu would like to view transactions">
+    <UFormGroup
+      label="Transaction view"
+      name="transaction_view"
+      help="Choose how ypu would like to view transactions"
+    >
       <USelect
         v-model="state.transaction_view"
-        :options="['daily', 'monthly', 'yearly']"
+        :options="transActionViewOptions"
       />
     </UFormGroup>
 
