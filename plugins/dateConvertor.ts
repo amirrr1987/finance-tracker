@@ -6,9 +6,11 @@ dayjs.extend(jalaliday);
 
 export default defineNuxtPlugin({
   setup(nuxtApp) {
-    const dateConvertor = (_input: string | Dayjs) => {
-      return dayjs(_input).locale(unitedStates.locale).format("YYYY-MM-DD");
-    };
-    nuxtApp.provide("dateConvertor", dateConvertor);
+    if (import.meta.server) {
+      const dateConvertor = (_input: string | Dayjs) => {
+        return dayjs(_input).locale(unitedStates.locale).format("YYYY-MM-DD");
+      };
+      nuxtApp.provide("dateConvertor", dateConvertor);
+    }
   },
 });
