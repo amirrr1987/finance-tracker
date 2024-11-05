@@ -18,7 +18,7 @@ const state = reactive({
 const isPending = ref<boolean>(false);
 const supabse = useSupabaseClient();
 const toast = useToast();
-
+const runtimeConfig = useRuntimeConfig() 
 const isSuccess = ref<boolean>(false);
 async function onSubmit(event: FormSubmitEvent<Schema>) {
   // auth.email.value = state.email ?? "";
@@ -28,7 +28,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     const { error } = await supabse.auth.signInWithOtp({
       email: state.email ?? "",
       options: {
-        emailRedirectTo: "http://localhost:3000/auth/confirm",
+        emailRedirectTo: `${runtimeConfig.public.baseUrl}/auth/confirm`  ,
       },
     });
     if (error) {
